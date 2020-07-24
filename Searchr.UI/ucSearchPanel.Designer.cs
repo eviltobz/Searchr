@@ -57,10 +57,9 @@
             this.ucDirectory1 = new Searchr.UI.ucDirectory();
             this.images = new System.Windows.Forms.ImageList(this.components);
             this.ResultsContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.editWithNotepadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exploreHereToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.commandPromptHereToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
+            this.commandPromptHereToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.clearResultsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pnlStatus = new System.Windows.Forms.Panel();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();

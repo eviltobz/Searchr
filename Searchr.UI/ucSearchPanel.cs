@@ -108,6 +108,8 @@ namespace Searchr.UI
             cmbIncludeFilePatterns.Select(cmbIncludeFilePatterns.Text.Length, 0);
             cmbExcludeFilePatterns.Select(cmbExcludeFilePatterns.Text.Length, 0);
             cmbExcludeFolderNames.Select(cmbExcludeFolderNames.Text.Length, 0);
+
+            SetUpOpeners();
         }
 
         private void btnSearch_Click(object sender, EventArgs e)
@@ -411,5 +413,62 @@ namespace Searchr.UI
                                   (int)Math.Max(0, src.G * ratio),
                                   (int)Math.Max(0, src.B * ratio));
         }
+        private void OpenLocation(Opener opener)
+        {
+            foreach (DataGridViewCell cell in dgResults.SelectedCells)
+            {
+                Process.Start(opener.Path, string.Format( "\"{0}\"", Path.Combine(((string)cell.OwningRow.Cells[4].Value))));
+            }
+        }
+        private void OpenFile(Opener opener)
+        {
+            foreach (DataGridViewCell cell in dgResults.SelectedCells)
+            {
+                Process.Start(opener.Path, string.Format( "\"{0}\"", Path.Combine(((string)cell.OwningRow.Cells[4].Value), (string)cell.OwningRow.Cells[2].Value)));
+            }
+        }
+
+        private void SetUpOpeners()
+        {
+            var separator = new System.Windows.Forms.ToolStripSeparator();
+            this.ResultsContextMenu.Items.Insert(0, separator);
+
+            foreach (var editor in FileOpeners.Reverse())
+            {
+                var item = new System.Windows.Forms.ToolStripMenuItem("Open in " + editor.Name);
+                item.Click += (s, e) => OpenFile(editor);
+                this.ResultsContextMenu.Items.Insert(0, item);
+            }
+        }
+
+        private void Item_Click(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private readonly struct Opener
+        {
+            public Opener(string name, string path, string arguments = "")
+            {
+                Name = name;
+                Path = path;
+                Arguments = arguments;
+            }
+
+            public string Name { get; }
+            public string Path { get; }
+            public string Arguments { get; }
+        }
+
+        private static readonly Opener[] FileOpeners = new[]
+        {
+            new Opener("vim", @"C:\tools\vim\vim82\gvim.exe"),
+            new Opener("VsCode", @"C:\Program Files\Microsoft VS Code\Code.exe"),
+        };
+
+        private static readonly Opener[] LocationOpeners = new[]
+        {
+            new Opener("PowerShell", @"powershell.exe"),
+        };
     }
 }
