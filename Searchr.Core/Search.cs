@@ -215,7 +215,12 @@ namespace Searchr.Core
                         }
                         catch (Exception ex)
                         {
-                            response.SetError(new ApplicationException("Failed to process file", ex));
+                            var excuse = "";
+
+                            if (ex.Message.EndsWith("used by another process."))
+                                excuse = "\nFile is locked.";
+
+                            response.SetError(new ApplicationException($"Failed to process file: \n{file.FullName}{excuse}", ex));
                         }
                     }
                 }

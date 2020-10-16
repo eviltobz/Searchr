@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 
 namespace Searchr.Core
 {
@@ -9,6 +10,7 @@ namespace Searchr.Core
         public int Hits;
         public int Misses;
         public Exception Error { get; private set; }
+        public List<Exception> Errors { get; private set; } = new List<Exception>();
 
         public SearchResponse()
         {
@@ -18,6 +20,7 @@ namespace Searchr.Core
         public void SetError(Exception ex)
         {
             this.Error = ex;
+            Errors.Add(ex);
         }
     }
 }
