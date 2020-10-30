@@ -4,6 +4,8 @@ using System.Windows.Forms;
 
 namespace Searchr.UI
 {
+    using Searchr.Core;
+
     public partial class frmMain : Form
     {
         public frmMain()
@@ -51,6 +53,25 @@ namespace Searchr.UI
             if (resultsTabs.SelectedIndex == resultsTabs.TabCount - 1)
             {
                 AddResultsTab();
+            }
+        }
+
+        private void UpdateTabTitle(TabPage tab, SearchRequest search)
+        {
+            if (search is null)
+            {
+                tab.Text = "Searchr";
+                tab.ToolTipText = "No searches executed yet...";
+            }
+            else
+            {
+                var term = search.SearchTerm;
+                tab.Text = term.Truncate(10);
+                //tab.Text = term.Length < 10
+                //            ? term
+                //            : term.Substring(0, 9) + "...";
+
+                tab.ToolTipText = search.SearchTerm + "\n" + search.Directory;
             }
         }
 
@@ -122,7 +143,7 @@ namespace Searchr.UI
                 UseVisualStyleBackColor = true
             };
 
-            var panel = new ucSearchPanel
+            var panel = new ucSearchPanel(x => UpdateTabTitle(newTab, x))
             {
                 Dock = DockStyle.Fill
             };

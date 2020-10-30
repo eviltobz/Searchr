@@ -52,6 +52,7 @@
             this.resultsTabs.Name = "resultsTabs";
             this.resultsTabs.Padding = new System.Drawing.Point(10, 6);
             this.resultsTabs.SelectedIndex = 0;
+            this.resultsTabs.ShowToolTips = true;
             this.resultsTabs.Size = new System.Drawing.Size(1369, 647);
             this.resultsTabs.TabIndex = 13;
             this.resultsTabs.SelectedIndexChanged += new System.EventHandler(this.resultsTabs_SelectedIndexChanged);

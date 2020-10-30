@@ -15,7 +15,7 @@ namespace Searchr.Core
         {
             public override SearchResult PerformSearch(SearchRequest request, FileInfo file)
             {
-                SearchResult results = new SearchResult(file);
+                SearchResult results = new SearchResult(file, request.Directory);
 
                 bool match(string value)
                 {
@@ -24,12 +24,14 @@ namespace Searchr.Core
 
                 if (request.SearchFileName && match(file.Name))
                 {
-                    results.Match = true;
+                    //results.Match = true;
+                    results.IsPathMatch();
                 }
 
                 if (request.SearchFilePath && match(file.FullName))
                 {
-                    results.Match = true;
+                    //results.Match = true;
+                    results.IsPathMatch();
                 }
 
                 if (request.SearchFileContents)
@@ -48,8 +50,10 @@ namespace Searchr.Core
 
                             if (match(line))
                             {
-                                results.TotalCount++;
-                                results.LineNumbers.Add(lineNumber);
+                                //results.TotalCount++;
+                                //results.LineNumbers.Add(lineNumber);
+                                //results.Lines.Add(line);
+                                results.Add(lineNumber, line);
                             }
 
                             lineNumber++;
@@ -57,7 +61,7 @@ namespace Searchr.Core
                     }
                 }
 
-                if (results.TotalCount > 0) results.Match = true;
+                //if (results.TotalCount > 0) results.Match = true;
 
                 return results;
             }
@@ -67,17 +71,19 @@ namespace Searchr.Core
         {
             public override SearchResult PerformSearch(SearchRequest request, FileInfo file)
             {
-                SearchResult results = new SearchResult(file);
+                SearchResult results = new SearchResult(file, request.Directory);
                 Regex exp = new Regex(request.SearchTerm, request.MatchCase ? RegexOptions.None : RegexOptions.IgnoreCase);
 
                 if (request.SearchFileName && exp.IsMatch(file.Name))
                 {
-                    results.Match = true;
+                    //results.Match = true;
+                    results.IsPathMatch();
                 }
 
                 if (request.SearchFilePath && exp.IsMatch(file.FullName))
                 {
-                    results.Match = true;
+                    //results.Match = true;
+                    results.IsPathMatch();
                 }
 
                 if (request.SearchFileContents)
@@ -96,8 +102,10 @@ namespace Searchr.Core
 
                             if (exp.IsMatch(line))
                             {
-                                results.TotalCount++;
-                                results.LineNumbers.Add(lineNumber);
+                                //results.TotalCount++;
+                                //results.LineNumbers.Add(lineNumber);
+                                //results.Lines.Add(line);
+                                results.Add(lineNumber, line);
                             }
 
                             lineNumber++;
@@ -105,7 +113,7 @@ namespace Searchr.Core
                     }
                 }
 
-                if (results.TotalCount > 0) results.Match = true;
+                //if (results.TotalCount > 0) results.Match = true;
 
                 return results;
             }

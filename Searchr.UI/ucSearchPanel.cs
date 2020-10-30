@@ -1,23 +1,26 @@
-﻿using Searchr.Core;
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Diagnostics;
-using System.Drawing;
-using System.IO;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-
-namespace Searchr.UI
+﻿namespace Searchr.UI
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics;
+    using System.Drawing;
+    using System.IO;
+    using System.Linq;
+    using System.Security.Cryptography;
+    using System.Threading.Tasks;
+    using System.Windows.Forms;
+    using Microsoft.SqlServer.Server;
+    using Searchr.Core;
+
     public partial class ucSearchPanel : UserControl
     {
+        private readonly Action<SearchRequest> setDetail;
         public SearchRequest CurrentSearch;
+        private Opener defaultOpener;
 
-        public ucSearchPanel()
+        public ucSearchPanel(Action<SearchRequest> setDetail)
         {
+            this.setDetail = setDetail;
             InitializeComponent();
 
             btnFilter.Enabled = false;
@@ -50,6 +53,8 @@ namespace Searchr.UI
             dgResults.Columns[5].Width = Config.Settings.ColumnWidth5;
 
             dgResults.Columns[5].DefaultCellStyle.Format = "#,# KB";
+
+            dgResults.Columns[0].Visible = false;
 
             cmbIncludeFilePatterns.Items.Clear();
             cmbIncludeFilePatterns.Items.AddRange(Config.CommonIncludedExtensions.ToArray());
@@ -110,6 +115,12 @@ namespace Searchr.UI
             cmbExcludeFolderNames.Select(cmbExcludeFolderNames.Text.Length, 0);
 
             SetUpOpeners();
+            UpdateDetails();
+        }
+
+        private void UpdateDetails()
+        {
+            setDetail(CurrentSearch);
         }
 
         private void btnSearch_Click(object sender, EventArgs e)
@@ -127,31 +138,31 @@ namespace Searchr.UI
             CurrentSearch.Abort();
         }
 
-        private void editWithNotepadToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            foreach (DataGridViewCell cell in dgResults.SelectedCells)
-            {
-                Process.Start(Config.NotepadPlusPlusLocation(), string.Format("\"{0}\"", Path.Combine(((string)cell.OwningRow.Cells[4].Value), (string)cell.OwningRow.Cells[2].Value)));
-            }
-        }
+        //private void editWithNotepadToolStripMenuItem_Click(object sender, EventArgs e)
+        //{
+        //    foreach (DataGridViewCell cell in dgResults.SelectedCells)
+        //    {
+        //        Process.Start(Config.NotepadPlusPlusLocation(), string.Format("\"{0}\"", Path.Combine(((string)cell.OwningRow.Cells[4].Value), (string)cell.OwningRow.Cells[2].Value)));
+        //    }
+        //}
 
-        private void exploreHereToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            foreach (DataGridViewCell cell in dgResults.SelectedCells)
-            {
-                Process.Start("explorer.exe", string.Format("/select, \"{0}\"", Path.Combine(((string)cell.OwningRow.Cells[4].Value), (string)cell.OwningRow.Cells[2].Value)));
-                break;
-            }
-        }
+        //private void exploreHereToolStripMenuItem_Click(object sender, EventArgs e)
+        //{
+        //    foreach (DataGridViewCell cell in dgResults.SelectedCells)
+        //    {
+        //        Process.Start("explorer.exe", $"/select, \"{Path.Combine(((string)cell.OwningRow.Cells[4].Value), (string)cell.OwningRow.Cells[2].Value)}\"");
+        //        break;
+        //    }
+        //}
 
-        private void commandPromptHereToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            foreach (DataGridViewCell cell in dgResults.SelectedCells)
-            {
-                Process.Start("cmd.exe", string.Format("/k cd /d \"{0}\"", (string)cell.OwningRow.Cells[4].Value));
-                break;
-            }
-        }
+        //private void commandPromptHereToolStripMenuItem_Click(object sender, EventArgs e)
+        //{
+        //    foreach (DataGridViewCell cell in dgResults.SelectedCells)
+        //    {
+        //        Process.Start("cmd.exe", $"/k cd /d \"{(string)cell.OwningRow.Cells[4].Value}\"");
+        //        break;
+        //    }
+        //}
 
         private void clearResultsToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -176,6 +187,7 @@ namespace Searchr.UI
         private void SearchNow(bool filter)
         {
             CurrentSearch = GetSearchRequest();
+            UpdateDetails();
 
             if (string.IsNullOrEmpty(CurrentSearch.SearchTerm))
             {
@@ -198,7 +210,10 @@ namespace Searchr.UI
 
             ButtonColorSet();
 
-            IEnumerable<string> paths = filter ? dgResults.Rows.OfType<DataGridViewRow>().Select(r => Path.Combine((string)r.Cells[4].Value, (string)r.Cells[2].Value)).ToList() :
+            //IEnumerable<string> paths = filter ? dgResults.Rows.OfType<DataGridViewRow>().Select(r => Path.Combine((string)r.Cells[4].Value, (string)r.Cells[2].Value)).ToList() :
+            //                                     Enumerable.Empty<string>();
+
+            IEnumerable<string> paths = filter ? dgResults.Rows.OfType<DataGridViewRow>().Select(r => r.SearchResult().FullPath).ToList() :
                                                  Enumerable.Empty<string>();
 
             statusText.Text = "Searching...";
@@ -222,43 +237,65 @@ namespace Searchr.UI
 
                         var row = new DataGridViewRow();
 
-                        var icon = IconHelper.GetSmallIconCached(result.File.FullName, result.File.Extension.ToLower());
+                        //var icon = IconHelper.GetSmallIconCached(result.File.FullName, result.File.Extension.ToLower());
+                        var toolTip = BuildToolTip(result);
 
-                        if (icon != null)
-                        {
-                            row.Cells.Add(new DataGridViewImageCell(true)
-                            {
-                                Value = icon
-                            });
-                        }
-                        else
-                        {
-                            row.Cells.Add(new DataGridViewImageCell(false));
-                        }
+                        row.Tag = result;
+                        //if (icon != null)
+                        //{
+                        //    row.Cells.Add(new DataGridViewImageCell(true)
+                        //    {
+                        //        Value = icon
+                        //    ,
+                        //        ToolTipText = toolTip
+                        //    });
+                        //}
+                        //else
+                        //{
+                        //    row.Cells.Add(new DataGridViewImageCell(false)
+                        //    {
+                        //        ToolTipText = toolTip
+                        //    });
+                        //}
+                        row.Cells.Add(new DataGridViewImageCell(false));
 
-                        row.Cells.Add(new DataGridViewTextBoxCell
+
+                    row.Cells.Add(new DataGridViewTextBoxCell
                         {
                             Value = result.TotalCount
+                            ,
+                            ToolTipText = toolTip
                         });
 
                         row.Cells.Add(new DataGridViewTextBoxCell
                         {
-                            Value = result.File.Name
+                            //Value = result.File.Name
+                            Value = result.FileName
+                            ,
+                            ToolTipText = toolTip
                         });
 
                         row.Cells.Add(new DataGridViewTextBoxCell
                         {
-                            Value = result.File.Extension
+                            //Value = result.File.Extension
+                            Value = result.FileType
+                            ,
+                            ToolTipText = toolTip
                         });
 
                         row.Cells.Add(new DataGridViewTextBoxCell
                         {
-                            Value = result.File.Directory.FullName
+                            //Value = result.File.Directory.FullName
+                            Value = result.RelativeFolder
+                            ,
+                            ToolTipText = result.FullFolder
                         });
 
                         row.Cells.Add(new DataGridViewTextBoxCell
                         {
-                            Value = (result.File.Length / 1024 + (result.File.Length % 1024 == 0 ? 0 : 1))
+                            //Value = (result.File.Length / 1024 + (result.File.Length % 1024 == 0 ? 0 : 1))
+                            Value = result.FileSize
+                            //, ToolTipText = toolTip
                         });
 
                         dgResults.InvokeAction(dg =>
@@ -282,7 +319,8 @@ namespace Searchr.UI
 
                     if (response.Error != null)
                     {
-                        MessageBox.Show(response.Error.Message);
+                        var totalErrors = response.Errors.Count;
+                        MessageBox.Show($"{totalErrors} error(s) encountered. Last one was:\n{response.Error.Message}");
                     }
 
                     btnStop.Enabled = false;
@@ -295,6 +333,27 @@ namespace Searchr.UI
             });
         }
 
+        private string BuildToolTip(SearchResult result)
+        {
+            const int PreviewLength = 120;
+            var preview = result.TotalCount > 0 ? "Matches:" : "";
+            foreach ((int num, string content) in result.Matches)
+            {
+                preview += $"\n#{num}: {content.Truncate(PreviewLength)}";
+            }
+
+            return preview;
+        }
+
+        //private string Format(string content)
+        //{
+        //    const int PreviewLength = 120;
+        //    var a = content.Trim();
+        //    return a.Length > PreviewLength
+        //               ? a.Substring(0, PreviewLength) + "..."
+        //               : a;
+        //}
+
         private SearchRequest GetSearchRequest()
         {
             var directory = ucDirectory1.Directory.Text;
@@ -305,7 +364,7 @@ namespace Searchr.UI
                 ucDirectory1.Directory.Text = directory;
             }
 
-            var request = new SearchRequest()
+            var request = new SearchRequest
             {
                 Directory = ucDirectory1.Directory.Text,
                 DirectoryOption = chkRecursive.Checked ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly,
@@ -329,31 +388,31 @@ namespace Searchr.UI
 
         private List<string> GetExtensions(string text)
         {
-            return text.Split(new char[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim()).Distinct().ToList();
+            return text.Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim()).Distinct().ToList();
         }
 
         private List<string> GetFolders(string text)
         {
-            return text.Split(new char[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim()).Distinct().ToList();
+            return text.Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim()).Distinct().ToList();
         }
 
         private void SaveCurrentSearch()
         {
             using (var sha = new SHA256Managed())
             {
-            var serializer = new JsonSerializer();
-            var serialized = serializer.Serialize(CurrentSearch);
-            var hashCode = Hex.ToString(sha.ComputeHash(serialized));
-            var historyFile = Path.Combine(Config.HistoryDirectory, string.Format("{0}.search", hashCode));
-            if (File.Exists(historyFile) == false)
-            {
-                File.WriteAllBytes(historyFile, serialized);
+                var serializer = new JsonSerializer();
+                var serialized = serializer.Serialize(CurrentSearch);
+                var hashCode = Hex.ToString(sha.ComputeHash(serialized));
+                var historyFile = Path.Combine(Config.HistoryDirectory, string.Format("{0}.search", hashCode));
+                if (File.Exists(historyFile) == false)
+                {
+                    File.WriteAllBytes(historyFile, serialized);
+                }
+                else
+                {
+                    new FileInfo(historyFile).LastWriteTime = DateTime.Now;
+                }
             }
-            else
-            {
-                new FileInfo(historyFile).LastWriteTime = DateTime.Now;
-            }
-        }
         }
 
         public DataGridView Results()
@@ -413,62 +472,204 @@ namespace Searchr.UI
                                   (int)Math.Max(0, src.G * ratio),
                                   (int)Math.Max(0, src.B * ratio));
         }
-        private void OpenLocation(Opener opener)
-        {
-            foreach (DataGridViewCell cell in dgResults.SelectedCells)
-            {
-                Process.Start(opener.Path, string.Format( "\"{0}\"", Path.Combine(((string)cell.OwningRow.Cells[4].Value))));
-            }
-        }
+
         private void OpenFile(Opener opener)
         {
-            foreach (DataGridViewCell cell in dgResults.SelectedCells)
+            foreach (var row in dgResults.SelectedRows.OfType<DataGridViewRow>())
             {
-                Process.Start(opener.Path, string.Format( "\"{0}\"", Path.Combine(((string)cell.OwningRow.Cells[4].Value), (string)cell.OwningRow.Cells[2].Value)));
+                //var commandLine = opener.CommandLinePattern
+                //    .Replace("[folder]", SelectedFolder)
+                //    .Replace("[filename]", SelectedFileName)
+                //    .Replace("[fullpath]", SelectedFullPath);
+                var commandLine = opener.CommandLinePattern
+                    .Replace("[folder]", row.Folder())
+                    .Replace("[filename]", row.FileName())
+                    .Replace("[fullpath]", row.FullPath());
+
+                Process.Start(opener.Path, commandLine);
+            }
+        }
+        private class RowCompare : IEqualityComparer<DataGridViewRow>
+        {
+            public bool Equals(DataGridViewRow x, DataGridViewRow y) =>
+                x.Folder() == y.Folder();
+
+            public int GetHashCode(DataGridViewRow obj) =>
+                obj.Folder().GetHashCode();
+        }
+
+        private void OpenLocation(Opener opener)
+        {
+            var folders = dgResults.SelectedRows.OfType<DataGridViewRow>().Distinct(new RowCompare());
+            foreach (var row in folders)
+            {
+                var commandLine = opener.CommandLinePattern
+                    .Replace("[folder]", row.Folder())
+                    .Replace("[filename]", row.FileName())
+                    .Replace("[fullpath]", row.FullPath());
+
+                Process.Start(opener.Path, commandLine);
             }
         }
 
         private void SetUpOpeners()
         {
-            var separator = new System.Windows.Forms.ToolStripSeparator();
-            this.ResultsContextMenu.Items.Insert(0, separator);
+            foreach (var editor in FileOpeners)
+                AddMenuItem("Open file in " + editor.Name, (s, e) => OpenFile(editor));
+            ResultsContextMenu.Items.Add(new ToolStripSeparator());
 
-            foreach (var editor in FileOpeners.Reverse())
-            {
-                var item = new System.Windows.Forms.ToolStripMenuItem("Open in " + editor.Name);
-                item.Click += (s, e) => OpenFile(editor);
-                this.ResultsContextMenu.Items.Insert(0, item);
-            }
+            foreach (var opener in LocationOpeners)
+                AddMenuItem(opener.Name + " Here", (s, e) => OpenLocation(opener));
+            ResultsContextMenu.Items.Add(new ToolStripSeparator());
+
+            AddMenuItem("Copy folder to clipboard", (s, e) => Clipboard.SetText(activeRow.Folder()));
+            AddMenuItem("Copy filename to clipboard", (s, e) => Clipboard.SetText(activeRow.FileName()));
+            AddMenuItem("Copy full path to clipboard", (s, e) => Clipboard.SetText(activeRow.FullPath()));
+            ResultsContextMenu.Items.Add(new ToolStripSeparator());
+
+            AddMenuItem("Clear results", (s, e) => Clear());
+
+            defaultOpener = FileOpeners.Union(LocationOpeners).First(x => x.DoubleClickAction);
         }
 
-        private void Item_Click(object sender, EventArgs e)
+        private ToolStripMenuItem AddMenuItem(string name, EventHandler handler)
         {
-            throw new NotImplementedException();
+            var item = new ToolStripMenuItem(name);
+            item.Click += handler;
+            ResultsContextMenu.Items.Add(item);
+            return item;
         }
 
         private readonly struct Opener
         {
-            public Opener(string name, string path, string arguments = "")
+            public Opener(string name, string path, string commandLinePattern = "\"[fullpath]\"", bool doubleClickAction = false)
             {
                 Name = name;
                 Path = path;
-                Arguments = arguments;
+                CommandLinePattern = commandLinePattern;
+                DoubleClickAction = doubleClickAction;
             }
 
             public string Name { get; }
             public string Path { get; }
-            public string Arguments { get; }
+            public string CommandLinePattern { get; }
+            public bool DoubleClickAction { get; }
         }
 
-        private static readonly Opener[] FileOpeners = new[]
-        {
-            new Opener("vim", @"C:\tools\vim\vim82\gvim.exe"),
+        private delegate string CommandLineBuilder(string folder, string filename, string fullpath);
+
+        private static readonly Opener[] FileOpeners = {
+            new Opener("vim", @"C:\tools\vim\vim82\gvim.exe", doubleClickAction:true),
             new Opener("VsCode", @"C:\Program Files\Microsoft VS Code\Code.exe"),
         };
 
-        private static readonly Opener[] LocationOpeners = new[]
-        {
-            new Opener("PowerShell", @"powershell.exe"),
+        private static readonly Opener[] LocationOpeners = {
+            new Opener("PowerShell", @"powershell.exe", "-NoExit -Command Set-Location -LiteralPath '[folder]'"),
+            new Opener("Command Prompt", @"cmd.exe", "/k cd /d \"[folder]\""),
+            new Opener("Explorer", @"explorer.exe", "/select, \"[fullpath]\"")
         };
+
+        private void dgResults_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            if (e.RowIndex >= 0 && e.ColumnIndex >= 0 && e.Button == MouseButtons.Right)
+            {
+                activeRow = dgResults.Rows[e.RowIndex];
+                if (!activeRow.Selected)
+                {
+                    dgResults.ClearSelection();
+                    activeRow.Selected = true;
+                }
+                Rectangle r = dgResults.GetCellDisplayRectangle(e.ColumnIndex, e.RowIndex, true);
+
+                ResultsContextMenu.Show((Control)sender, r.Left + e.X, r.Top + e.Y);
+            }
+        }
+
+        private void dgResults_CellMouseDoubleClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            if (e.RowIndex >= 0 && e.ColumnIndex >= 0)
+            {
+                dgResults.ClearSelection();
+                activeRow = dgResults.Rows[e.RowIndex];
+                activeRow.Selected = true;
+                OpenFile(defaultOpener);
+            }
+        }
+
+        private DataGridViewRow activeRow = null;
+
+        private void dgResults_SelectionChanged(object sender, EventArgs e)
+        {
+            //if (dgResults.SelectedRows.Count == 0)
+            //    activeRow = null;
+            //else
+            if (dgResults.SelectedRows.Count == 1)
+                activeRow = dgResults.SelectedRows[0];
+        }
+
+        private void dgResults_KeyDown(object sender, KeyEventArgs e)
+        {
+            Debug.Print($"DOWN - Code:{e.KeyCode}");
+            if (e.KeyCode == Keys.Return)
+                e.Handled = true;
+
+            // do some sort of state latch. catch a down, act on a paired up. prolly only a single keycode can latch at a time
+        }
+
+        private void dgResults_KeyUp(object sender, KeyEventArgs e)
+        {
+            Debug.Print($"UP   - Code:{e.KeyCode}");
+            if (e.KeyCode == Keys.Return)
+            {
+                e.Handled = true;
+                //if (activeRow != null && dgResults.SelectedRows.Count == 1)
+                //    OpenFile(defaultOpener);
+            }
+
+        }
+
+        private void dgResults_KeyPress(object sender, KeyPressEventArgs e)
+        {
+
+            Debug.Print($"PRES - Char:{e.KeyChar}");
+
+            if (e.KeyChar == '\r')
+            {
+                e.Handled = true;
+                if (activeRow != null && dgResults.SelectedRows.Count == 1)
+                    OpenFile(defaultOpener);
+            }
+
+        }
     }
+
+    // Notes to self:
+    // Display the folder relative to the search folder, not the full path
+    // * make sure that the full folder is used for opening, clipboard, etc.
+    // * stop using the grid for any such data - have it display things as it chooses, but reference the search result to do work
+
+    public static class Extensions
+    {
+        //public static string Folder(this DataGridViewRow row) => (string)row.Cells[4].Value;
+        //public static string FileName(this DataGridViewRow row) => (string)row.Cells[2].Value;
+        //public static string FullPath(this DataGridViewRow row) => Path.Combine(Folder(row), FileName(row));
+
+        public static SearchResult SearchResult(this DataGridViewRow row) => row.Tag as SearchResult;
+
+        public static string Folder(this DataGridViewRow row) => row.SearchResult().FullFolder;
+
+        public static string FileName(this DataGridViewRow row) => row.SearchResult().FileName;
+
+        public static string FullPath(this DataGridViewRow row) => row.SearchResult().FullPath;
+
+        public static string Truncate(this string content, int maxLength)
+        {
+            var a = content.Trim();
+            return a.Length > maxLength
+                       ? a.Substring(0, maxLength) + "…"
+                       : a;
+        }
+    }
+
+
 }

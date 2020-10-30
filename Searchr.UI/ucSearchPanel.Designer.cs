@@ -58,8 +58,8 @@
             this.images = new System.Windows.Forms.ImageList(this.components);
             this.ResultsContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.exploreHereToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
             this.commandPromptHereToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
             this.clearResultsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pnlStatus = new System.Windows.Forms.Panel();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
@@ -74,7 +74,6 @@
             this.FileSize = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.pnlControls.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
-            this.ResultsContextMenu.SuspendLayout();
             this.pnlStatus.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgResults)).BeginInit();
@@ -152,7 +151,7 @@
             this.label5.Margin = new System.Windows.Forms.Padding(0);
             this.label5.Name = "label5";
             this.label5.Padding = new System.Windows.Forms.Padding(3, 4, 0, 0);
-            this.label5.Size = new System.Drawing.Size(127, 19);
+            this.label5.Size = new System.Drawing.Size(126, 19);
             this.label5.TabIndex = 43;
             this.label5.Text = "Exclude Folder Names";
             // 
@@ -257,7 +256,7 @@
             this.label4.Margin = new System.Windows.Forms.Padding(0);
             this.label4.Name = "label4";
             this.label4.Padding = new System.Windows.Forms.Padding(3, 4, 0, 0);
-            this.label4.Size = new System.Drawing.Size(118, 19);
+            this.label4.Size = new System.Drawing.Size(117, 19);
             this.label4.TabIndex = 41;
             this.label4.Text = "Exclude File Patterns";
             // 
@@ -354,7 +353,7 @@
             this.label1.Margin = new System.Windows.Forms.Padding(0);
             this.label1.Name = "label1";
             this.label1.Padding = new System.Windows.Forms.Padding(3, 4, 0, 0);
-            this.label1.Size = new System.Drawing.Size(74, 19);
+            this.label1.Size = new System.Drawing.Size(75, 19);
             this.label1.TabIndex = 40;
             this.label1.Text = "Search Term";
             // 
@@ -451,47 +450,28 @@
             // 
             // ResultsContextMenu
             // 
-            this.ResultsContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.editWithNotepadToolStripMenuItem,
-            this.exploreHereToolStripMenuItem,
-            this.commandPromptHereToolStripMenuItem,
-            this.toolStripMenuItem1,
-            this.clearResultsToolStripMenuItem});
             this.ResultsContextMenu.Name = "ResultsContextMenu";
-            this.ResultsContextMenu.Size = new System.Drawing.Size(203, 98);
-            // 
-            // editWithNotepadToolStripMenuItem
-            // 
-            this.editWithNotepadToolStripMenuItem.Name = "editWithNotepadToolStripMenuItem";
-            this.editWithNotepadToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
-            this.editWithNotepadToolStripMenuItem.Text = "Edit with Notepad++";
-            this.editWithNotepadToolStripMenuItem.Click += new System.EventHandler(this.editWithNotepadToolStripMenuItem_Click);
+            this.ResultsContextMenu.Size = new System.Drawing.Size(61, 4);
             // 
             // exploreHereToolStripMenuItem
             // 
             this.exploreHereToolStripMenuItem.Name = "exploreHereToolStripMenuItem";
-            this.exploreHereToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
-            this.exploreHereToolStripMenuItem.Text = "Explore Here";
-            this.exploreHereToolStripMenuItem.Click += new System.EventHandler(this.exploreHereToolStripMenuItem_Click);
+            this.exploreHereToolStripMenuItem.Size = new System.Drawing.Size(32, 19);
             // 
             // commandPromptHereToolStripMenuItem
             // 
             this.commandPromptHereToolStripMenuItem.Name = "commandPromptHereToolStripMenuItem";
-            this.commandPromptHereToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
-            this.commandPromptHereToolStripMenuItem.Text = "Command Prompt Here";
-            this.commandPromptHereToolStripMenuItem.Click += new System.EventHandler(this.commandPromptHereToolStripMenuItem_Click);
+            this.commandPromptHereToolStripMenuItem.Size = new System.Drawing.Size(32, 19);
             // 
             // toolStripMenuItem1
             // 
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(199, 6);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(6, 6);
             // 
             // clearResultsToolStripMenuItem
             // 
             this.clearResultsToolStripMenuItem.Name = "clearResultsToolStripMenuItem";
-            this.clearResultsToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
-            this.clearResultsToolStripMenuItem.Text = "Clear Results";
-            this.clearResultsToolStripMenuItem.Click += new System.EventHandler(this.clearResultsToolStripMenuItem_Click);
+            this.clearResultsToolStripMenuItem.Size = new System.Drawing.Size(32, 19);
             // 
             // pnlStatus
             // 
@@ -542,14 +522,21 @@
             this.Ext,
             this.Directory,
             this.FileSize});
-            this.dgResults.ContextMenuStrip = this.ResultsContextMenu;
             this.dgResults.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgResults.Location = new System.Drawing.Point(0, 162);
             this.dgResults.Margin = new System.Windows.Forms.Padding(10);
             this.dgResults.Name = "dgResults";
             this.dgResults.ReadOnly = true;
+            this.dgResults.RowHeadersVisible = false;
+            this.dgResults.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dgResults.Size = new System.Drawing.Size(1339, 462);
             this.dgResults.TabIndex = 18;
+            this.dgResults.CellMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dgResults_CellMouseClick);
+            this.dgResults.CellMouseDoubleClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dgResults_CellMouseDoubleClick);
+            this.dgResults.SelectionChanged += new System.EventHandler(this.dgResults_SelectionChanged);
+            this.dgResults.KeyDown += new System.Windows.Forms.KeyEventHandler(this.dgResults_KeyDown);
+            this.dgResults.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.dgResults_KeyPress);
+            this.dgResults.KeyUp += new System.Windows.Forms.KeyEventHandler(this.dgResults_KeyUp);
             // 
             // FileIcon
             // 
@@ -605,7 +592,6 @@
             this.pnlControls.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
-            this.ResultsContextMenu.ResumeLayout(false);
             this.pnlStatus.ResumeLayout(false);
             this.pnlStatus.PerformLayout();
             this.statusStrip1.ResumeLayout(false);
@@ -619,7 +605,7 @@
 
         private System.Windows.Forms.Panel pnlControls;
         private System.Windows.Forms.ContextMenuStrip ResultsContextMenu;
-        private System.Windows.Forms.ToolStripMenuItem editWithNotepadToolStripMenuItem;
+        //private System.Windows.Forms.ToolStripMenuItem editWithNotepadToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exploreHereToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem commandPromptHereToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
