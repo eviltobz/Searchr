@@ -9,7 +9,6 @@
     using System.Security.Cryptography;
     using System.Threading.Tasks;
     using System.Windows.Forms;
-    using Microsoft.SqlServer.Server;
     using Searchr.Core;
 
     public partial class ucSearchPanel : UserControl
@@ -34,10 +33,8 @@
                 Config.Settings.ColumnDisplayIndex1 +
                 Config.Settings.ColumnDisplayIndex2 +
                 Config.Settings.ColumnDisplayIndex3 +
-                Config.Settings.ColumnDisplayIndex4 +
-                Config.Settings.ColumnDisplayIndex5 > 0)
+                Config.Settings.ColumnDisplayIndex4 > 0)
             {
-                dgResults.Columns[5].DisplayIndex = Config.Settings.ColumnDisplayIndex5;
                 dgResults.Columns[4].DisplayIndex = Config.Settings.ColumnDisplayIndex4;
                 dgResults.Columns[3].DisplayIndex = Config.Settings.ColumnDisplayIndex3;
                 dgResults.Columns[2].DisplayIndex = Config.Settings.ColumnDisplayIndex2;
@@ -50,11 +47,8 @@
             dgResults.Columns[2].Width = Config.Settings.ColumnWidth2;
             dgResults.Columns[3].Width = Config.Settings.ColumnWidth3;
             dgResults.Columns[4].Width = Config.Settings.ColumnWidth4;
-            dgResults.Columns[5].Width = Config.Settings.ColumnWidth5;
 
-            dgResults.Columns[5].DefaultCellStyle.Format = "#,# KB";
-
-            dgResults.Columns[0].Visible = false;
+            dgResults.Columns[4].DefaultCellStyle.Format = "#,# KB";
 
             cmbIncludeFilePatterns.Items.Clear();
             cmbIncludeFilePatterns.Items.AddRange(Config.CommonIncludedExtensions.ToArray());
@@ -164,10 +158,10 @@
         //    }
         //}
 
-        private void clearResultsToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            Clear();
-        }
+        //private void clearResultsToolStripMenuItem_Click(object sender, EventArgs e)
+        //{
+        //    Clear();
+        //}
 
         private void txtSearchTerm_KeyPress(object sender, KeyPressEventArgs e)
         {
@@ -186,7 +180,7 @@
 
         private void SearchNow(bool filter)
         {
-            CurrentSearch = GetSearchRequest();
+            CurrentSearch = GetSearchRequest(filter);
             UpdateDetails();
 
             if (string.IsNullOrEmpty(CurrentSearch.SearchTerm))
@@ -213,15 +207,17 @@
             //IEnumerable<string> paths = filter ? dgResults.Rows.OfType<DataGridViewRow>().Select(r => Path.Combine((string)r.Cells[4].Value, (string)r.Cells[2].Value)).ToList() :
             //                                     Enumerable.Empty<string>();
 
-            IEnumerable<string> paths = filter ? dgResults.Rows.OfType<DataGridViewRow>().Select(r => r.SearchResult().FullPath).ToList() :
-                                                 Enumerable.Empty<string>();
+            //IEnumerable<string> paths = filter ? dgResults.Rows.OfType<DataGridViewRow>().Select(r => r.FullPath()).ToList() :
+            //                                     Enumerable.Empty<string>();
+            var paths = dgResults.Rows.OfType<DataGridViewRow>().Select(r => r.FullPath()).ToList();
 
             statusText.Text = "Searching...";
 
             dgResults.Rows.Clear();
 
-            var response = filter ? Search.PerformFilter(CurrentSearch, paths) :
-                                    Search.PerformSearch(CurrentSearch);
+            var response = filter
+                               ? Search.PerformFilter(CurrentSearch, paths)
+                               : Search.PerformSearch(CurrentSearch);
 
             int totalFiles = 0;
             int totalHits = 0;
@@ -257,13 +253,13 @@
                         //        ToolTipText = toolTip
                         //    });
                         //}
-                        row.Cells.Add(new DataGridViewImageCell(false));
+                        //row.Cells.Add(new DataGridViewImageCell(false));
 
 
-                    row.Cells.Add(new DataGridViewTextBoxCell
+                        row.Cells.Add(new DataGridViewTextBoxCell
                         {
                             Value = result.TotalCount
-                            ,
+                                ,
                             ToolTipText = toolTip
                         });
 
@@ -354,7 +350,7 @@
         //               : a;
         //}
 
-        private SearchRequest GetSearchRequest()
+        private SearchRequest GetSearchRequest(bool filter)
         {
             var directory = ucDirectory1.Directory.Text;
 
@@ -380,7 +376,8 @@
                 ExcludeBinaryFiles = !chkIncludeBinaryFiles.Checked,
                 SearchFileContents = chkSearchFileContents.Checked,
                 SearchFileName = chkSearchFileName.Checked,
-                SearchFilePath = chkSearchFilePath.Checked
+                SearchFilePath = chkSearchFilePath.Checked,
+                ParentSearch = filter ? CurrentSearch : null
             };
 
             return request;
@@ -642,34 +639,4 @@
 
         }
     }
-
-    // Notes to self:
-    // Display the folder relative to the search folder, not the full path
-    // * make sure that the full folder is used for opening, clipboard, etc.
-    // * stop using the grid for any such data - have it display things as it chooses, but reference the search result to do work
-
-    public static class Extensions
-    {
-        //public static string Folder(this DataGridViewRow row) => (string)row.Cells[4].Value;
-        //public static string FileName(this DataGridViewRow row) => (string)row.Cells[2].Value;
-        //public static string FullPath(this DataGridViewRow row) => Path.Combine(Folder(row), FileName(row));
-
-        public static SearchResult SearchResult(this DataGridViewRow row) => row.Tag as SearchResult;
-
-        public static string Folder(this DataGridViewRow row) => row.SearchResult().FullFolder;
-
-        public static string FileName(this DataGridViewRow row) => row.SearchResult().FileName;
-
-        public static string FullPath(this DataGridViewRow row) => row.SearchResult().FullPath;
-
-        public static string Truncate(this string content, int maxLength)
-        {
-            var a = content.Trim();
-            return a.Length > maxLength
-                       ? a.Substring(0, maxLength) + "…"
-                       : a;
-        }
-    }
-
-
 }

@@ -65,14 +65,31 @@ namespace Searchr.UI
             }
             else
             {
-                var term = search.SearchTerm;
-                tab.Text = term.Truncate(10);
-                //tab.Text = term.Length < 10
-                //            ? term
-                //            : term.Substring(0, 9) + "...";
-
-                tab.ToolTipText = search.SearchTerm + "\n" + search.Directory;
+                tab.Text = search.SearchTerm.Truncate(10);
+                tab.ToolTipText = BuildSearchDescription(search).text;
             }
+        }
+
+        private (string text, int indent) BuildSearchDescription(SearchRequest search, int indent = 0)
+        {
+            var text = "";
+            var pad = "";
+            int totalIndent;
+            if (search.ParentSearch != null)
+            {
+                var (val, indentX) = BuildSearchDescription(search.ParentSearch, indent + 1);
+                totalIndent = indentX;
+                pad = "".PadLeft((totalIndent - indent) * 2);
+                text += val + $"\n\n{pad}Filter: ";
+            }
+            else
+            {
+                text += "Search: ";
+                totalIndent = indent;
+            }
+
+            text += search.SearchTerm + $"\n{pad}" + search.Directory;
+            return (text, totalIndent);
         }
 
         private void resultsTabs_MouseClick(object sender, MouseEventArgs e)
@@ -101,7 +118,6 @@ namespace Searchr.UI
                 Config.Settings.ColumnWidth2 = currentResults.Columns[2].Width;
                 Config.Settings.ColumnWidth3 = currentResults.Columns[3].Width;
                 Config.Settings.ColumnWidth4 = currentResults.Columns[4].Width;
-                Config.Settings.ColumnWidth5 = currentResults.Columns[5].Width;
 
 
                 Config.Settings.ColumnDisplayIndex0 = currentResults.Columns[0].DisplayIndex;
@@ -109,7 +125,6 @@ namespace Searchr.UI
                 Config.Settings.ColumnDisplayIndex2 = currentResults.Columns[2].DisplayIndex;
                 Config.Settings.ColumnDisplayIndex3 = currentResults.Columns[3].DisplayIndex;
                 Config.Settings.ColumnDisplayIndex4 = currentResults.Columns[4].DisplayIndex;
-                Config.Settings.ColumnDisplayIndex5 = currentResults.Columns[5].DisplayIndex;
             }
 
             Config.Settings.Maximised = WindowState == FormWindowState.Maximized;

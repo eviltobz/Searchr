@@ -66,7 +66,6 @@
             this.statusText = new System.Windows.Forms.ToolStripStatusLabel();
             this.pnlResults = new System.Windows.Forms.Panel();
             this.dgResults = new System.Windows.Forms.DataGridView();
-            this.FileIcon = new System.Windows.Forms.DataGridViewImageColumn();
             this.Lines = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.FileName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Ext = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -516,7 +515,6 @@
             this.dgResults.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.dgResults.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgResults.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.FileIcon,
             this.Lines,
             this.FileName,
             this.Ext,
@@ -537,13 +535,6 @@
             this.dgResults.KeyDown += new System.Windows.Forms.KeyEventHandler(this.dgResults_KeyDown);
             this.dgResults.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.dgResults_KeyPress);
             this.dgResults.KeyUp += new System.Windows.Forms.KeyEventHandler(this.dgResults_KeyUp);
-            // 
-            // FileIcon
-            // 
-            this.FileIcon.HeaderText = "";
-            this.FileIcon.Name = "FileIcon";
-            this.FileIcon.ReadOnly = true;
-            this.FileIcon.Width = 22;
             // 
             // Lines
             // 
@@ -640,7 +631,6 @@
         private System.Windows.Forms.DataGridView dgResults;
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripStatusLabel statusText;
-        private System.Windows.Forms.DataGridViewImageColumn FileIcon;
         private System.Windows.Forms.DataGridViewTextBoxColumn Lines;
         private System.Windows.Forms.DataGridViewTextBoxColumn FileName;
         private System.Windows.Forms.DataGridViewTextBoxColumn Ext;

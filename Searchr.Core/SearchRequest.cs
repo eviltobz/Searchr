@@ -23,6 +23,7 @@ namespace Searchr.Core
         public bool SearchFileContents { get; set; }
         public bool SearchFileName { get; set; }
         public bool SearchFilePath { get; set; }
+        public SearchRequest ParentSearch { get; set; }
 
         private CancellationTokenSource cancellationSource;
 

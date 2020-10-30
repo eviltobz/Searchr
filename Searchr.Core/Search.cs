@@ -89,7 +89,9 @@ namespace Searchr.Core
             {
                 foreach (var path in paths)
                 {
-                    inputFiles.Add(new FileInfo(path));
+                    // TODO - May need some more checking against the request here, eg. file extension.
+                    if (path.StartsWith(request.Directory))
+                        inputFiles.Add(new FileInfo(path));
                 }
             }
             catch (Exception ex)

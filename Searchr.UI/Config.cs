@@ -155,8 +155,7 @@ namespace Searchr.UI
                     ColumnWidth1 = 100,
                     ColumnWidth2 = 100,
                     ColumnWidth3 = 100,
-                    ColumnWidth4 = 100,
-                    ColumnWidth5 = 100
+                    ColumnWidth4 = 100
                 };
             }
         }
