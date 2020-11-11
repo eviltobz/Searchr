@@ -110,6 +110,8 @@
 
             SetUpOpeners();
             UpdateDetails();
+
+            statusError.Click += (sender, args) => MessageBox.Show(errorDetail);
         }
 
         private void UpdateDetails()
@@ -131,37 +133,6 @@
         {
             CurrentSearch.Abort();
         }
-
-        //private void editWithNotepadToolStripMenuItem_Click(object sender, EventArgs e)
-        //{
-        //    foreach (DataGridViewCell cell in dgResults.SelectedCells)
-        //    {
-        //        Process.Start(Config.NotepadPlusPlusLocation(), string.Format("\"{0}\"", Path.Combine(((string)cell.OwningRow.Cells[4].Value), (string)cell.OwningRow.Cells[2].Value)));
-        //    }
-        //}
-
-        //private void exploreHereToolStripMenuItem_Click(object sender, EventArgs e)
-        //{
-        //    foreach (DataGridViewCell cell in dgResults.SelectedCells)
-        //    {
-        //        Process.Start("explorer.exe", $"/select, \"{Path.Combine(((string)cell.OwningRow.Cells[4].Value), (string)cell.OwningRow.Cells[2].Value)}\"");
-        //        break;
-        //    }
-        //}
-
-        //private void commandPromptHereToolStripMenuItem_Click(object sender, EventArgs e)
-        //{
-        //    foreach (DataGridViewCell cell in dgResults.SelectedCells)
-        //    {
-        //        Process.Start("cmd.exe", $"/k cd /d \"{(string)cell.OwningRow.Cells[4].Value}\"");
-        //        break;
-        //    }
-        //}
-
-        //private void clearResultsToolStripMenuItem_Click(object sender, EventArgs e)
-        //{
-        //    Clear();
-        //}
 
         private void txtSearchTerm_KeyPress(object sender, KeyPressEventArgs e)
         {
@@ -204,11 +175,6 @@
 
             ButtonColorSet();
 
-            //IEnumerable<string> paths = filter ? dgResults.Rows.OfType<DataGridViewRow>().Select(r => Path.Combine((string)r.Cells[4].Value, (string)r.Cells[2].Value)).ToList() :
-            //                                     Enumerable.Empty<string>();
-
-            //IEnumerable<string> paths = filter ? dgResults.Rows.OfType<DataGridViewRow>().Select(r => r.FullPath()).ToList() :
-            //                                     Enumerable.Empty<string>();
             var paths = dgResults.Rows.OfType<DataGridViewRow>().Select(r => r.FullPath()).ToList();
 
             statusText.Text = "Searching...";
@@ -226,62 +192,47 @@
             {
                 try
                 {
+                    statusError.Visible = false;
                     foreach (var result in response.Results.GetConsumingEnumerable(CurrentSearch.CancellationToken))
                     {
+                        if (result == SearchResult.Error)
+                        {
+                            var totalErrors = response.Errors.Count;
+                            statusError.Text = $"{totalErrors} error(s) encountered.";
+                            var err = string.Join("\n\n", response.Errors.Select(e => e.Message));
+                            errorDetail = err;
+                            statusError.Visible = true;
+                            continue;
+                        }
+
                         totalFiles++;
                         totalHits += result.TotalCount;
 
                         var row = new DataGridViewRow();
 
-                        //var icon = IconHelper.GetSmallIconCached(result.File.FullName, result.File.Extension.ToLower());
-                        var toolTip = BuildToolTip(result);
+                        var matchDetail = BuildToolTip(result);
 
                         row.Tag = result;
-                        //if (icon != null)
-                        //{
-                        //    row.Cells.Add(new DataGridViewImageCell(true)
-                        //    {
-                        //        Value = icon
-                        //    ,
-                        //        ToolTipText = toolTip
-                        //    });
-                        //}
-                        //else
-                        //{
-                        //    row.Cells.Add(new DataGridViewImageCell(false)
-                        //    {
-                        //        ToolTipText = toolTip
-                        //    });
-                        //}
-                        //row.Cells.Add(new DataGridViewImageCell(false));
-
 
                         row.Cells.Add(new DataGridViewTextBoxCell
                         {
                             Value = result.TotalCount
                                 ,
-                            ToolTipText = toolTip
+                            ToolTipText = matchDetail
                         });
 
                         row.Cells.Add(new DataGridViewTextBoxCell
                         {
-                            //Value = result.File.Name
                             Value = result.FileName
-                            ,
-                            ToolTipText = toolTip
                         });
 
                         row.Cells.Add(new DataGridViewTextBoxCell
                         {
-                            //Value = result.File.Extension
                             Value = result.FileType
-                            ,
-                            ToolTipText = toolTip
                         });
 
                         row.Cells.Add(new DataGridViewTextBoxCell
                         {
-                            //Value = result.File.Directory.FullName
                             Value = result.RelativeFolder
                             ,
                             ToolTipText = result.FullFolder
@@ -289,9 +240,7 @@
 
                         row.Cells.Add(new DataGridViewTextBoxCell
                         {
-                            //Value = (result.File.Length / 1024 + (result.File.Length % 1024 == 0 ? 0 : 1))
                             Value = result.FileSize
-                            //, ToolTipText = toolTip
                         });
 
                         dgResults.InvokeAction(dg =>
@@ -313,10 +262,15 @@
                 {
                     statusText.Text = $"Found {totalHits:n0} lines in {totalFiles:n0} files";
 
-                    if (response.Error != null)
+                    if (response.Error is null)
+                        statusError.Visible = false;
+                    else
                     {
                         var totalErrors = response.Errors.Count;
-                        MessageBox.Show($"{totalErrors} error(s) encountered. Last one was:\n{response.Error.Message}");
+                        statusError.Text = $"{totalErrors} error(s) encountered.";
+                        var err = string.Join("\n\n", response.Errors.Select(e => e.Message));
+                        errorDetail = err;
+                        statusError.Visible = true;
                     }
 
                     btnStop.Enabled = false;
@@ -329,6 +283,8 @@
             });
         }
 
+        private string errorDetail = "";
+
         private string BuildToolTip(SearchResult result)
         {
             const int PreviewLength = 120;
@@ -340,15 +296,6 @@
 
             return preview;
         }
-
-        //private string Format(string content)
-        //{
-        //    const int PreviewLength = 120;
-        //    var a = content.Trim();
-        //    return a.Length > PreviewLength
-        //               ? a.Substring(0, PreviewLength) + "..."
-        //               : a;
-        //}
 
         private SearchRequest GetSearchRequest(bool filter)
         {
@@ -474,10 +421,6 @@
         {
             foreach (var row in dgResults.SelectedRows.OfType<DataGridViewRow>())
             {
-                //var commandLine = opener.CommandLinePattern
-                //    .Replace("[folder]", SelectedFolder)
-                //    .Replace("[filename]", SelectedFileName)
-                //    .Replace("[fullpath]", SelectedFullPath);
                 var commandLine = opener.CommandLinePattern
                     .Replace("[folder]", row.Folder())
                     .Replace("[filename]", row.FileName())
@@ -597,9 +540,6 @@
 
         private void dgResults_SelectionChanged(object sender, EventArgs e)
         {
-            //if (dgResults.SelectedRows.Count == 0)
-            //    activeRow = null;
-            //else
             if (dgResults.SelectedRows.Count == 1)
                 activeRow = dgResults.SelectedRows[0];
         }
@@ -609,8 +549,6 @@
             Debug.Print($"DOWN - Code:{e.KeyCode}");
             if (e.KeyCode == Keys.Return)
                 e.Handled = true;
-
-            // do some sort of state latch. catch a down, act on a paired up. prolly only a single keycode can latch at a time
         }
 
         private void dgResults_KeyUp(object sender, KeyEventArgs e)
@@ -619,8 +557,6 @@
             if (e.KeyCode == Keys.Return)
             {
                 e.Handled = true;
-                //if (activeRow != null && dgResults.SelectedRows.Count == 1)
-                //    OpenFile(defaultOpener);
             }
 
         }
@@ -638,5 +574,6 @@
             }
 
         }
+
     }
 }

@@ -11,7 +11,10 @@ namespace Searchr.Core
 {
     public static class Search
     {
-        public static List<string> BinaryFiles = "exe,dll,pdb,bin,jpg,jpeg,gif,bmp,png,pack,nupkg,zip,7z,tar,gz,lz,bz2,rar,jar,cab,iso,img,mpg,mpeg,avi,mp4,aaf,mp3,wav,bik,mov,wmv".Split(',').Select(e => $"*.{e}").ToList();
+        public static List<string> BinaryFiles = ("exe,dll,pdb,bin,tlb,cache,jpg,jpeg,gif,bmp,png,pack,nupkg"
+                                                 + ",zip,7z,tar,gz,lz,bz2,rar,jar,cab,iso,img,mpg,mpeg,avi"
+                                                 + ",mp4,aaf,mp3,wav,bik,mov,wmv")
+                                                     .Split(',').Select(e => $"*.{e}").ToList();
 
         public static SearchResponse PerformSearch(SearchRequest request)
         {
@@ -223,6 +226,7 @@ namespace Searchr.Core
                                 excuse = "\nFile is locked.";
 
                             response.SetError(new ApplicationException($"Failed to process file: \n{file.FullName}{excuse}", ex));
+                            response.Results.Add(SearchResult.Error);
                         }
                     }
                 }

@@ -19,6 +19,9 @@ namespace Searchr.Core
             var full = File.Directory.FullName;
             RelativeFolder = full.Replace(searchRoot, ".");
         }
+
+        private SearchResult() { }
+
         public string FileName { get => File.Name; }
         public string FullPath { get => File.FullName; }
         public string FileType { get => File.Extension; }
@@ -39,5 +42,7 @@ namespace Searchr.Core
             matches.Add((lineNumber, content));
             Match = true;
         }
+
+        public static readonly SearchResult Error = new SearchResult();
     }
 }

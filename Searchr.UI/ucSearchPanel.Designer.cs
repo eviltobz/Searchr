@@ -1,5 +1,8 @@
 ﻿namespace Searchr.UI
 {
+    using System.Drawing;
+    using System.Windows.Forms;
+
     partial class ucSearchPanel
     {
         /// <summary> 
@@ -64,6 +67,8 @@
             this.pnlStatus = new System.Windows.Forms.Panel();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.statusText = new System.Windows.Forms.ToolStripStatusLabel();
+            this.statusSpacer = new System.Windows.Forms.ToolStripStatusLabel();
+            this.statusError = new System.Windows.Forms.ToolStripStatusLabel();
             this.pnlResults = new System.Windows.Forms.Panel();
             this.dgResults = new System.Windows.Forms.DataGridView();
             this.Lines = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -485,7 +490,10 @@
             // 
             this.statusStrip1.BackColor = System.Drawing.Color.White;
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.statusText});
+                this.statusText,
+                this.statusSpacer,
+                this.statusError
+            });
             this.statusStrip1.Location = new System.Drawing.Point(0, 0);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(1339, 22);
@@ -498,6 +506,21 @@
             this.statusText.Name = "statusText";
             this.statusText.Padding = new System.Windows.Forms.Padding(3, 0, 0, 0);
             this.statusText.Size = new System.Drawing.Size(3, 17);
+            // 
+            // statusSpacer
+            // 
+            this.statusSpacer.Name = "statusSpacer";
+            this.statusSpacer.Padding = new System.Windows.Forms.Padding(3, 0, 0, 0);
+            this.statusSpacer.Spring = true;
+            // 
+            // statusError
+            // 
+            this.statusError.Name = "statusError";
+            this.statusError.Padding = new System.Windows.Forms.Padding(10, 0, 0, 0);
+            this.statusError.BackColor = Color.Red;
+            this.statusError.Alignment = ToolStripItemAlignment.Right;
+            this.statusError.Dock = DockStyle.Right;
+            this.statusError.Visible = false;
             // 
             // pnlResults
             // 
@@ -596,7 +619,6 @@
 
         private System.Windows.Forms.Panel pnlControls;
         private System.Windows.Forms.ContextMenuStrip ResultsContextMenu;
-        //private System.Windows.Forms.ToolStripMenuItem editWithNotepadToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exploreHereToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem commandPromptHereToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
@@ -631,6 +653,8 @@
         private System.Windows.Forms.DataGridView dgResults;
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripStatusLabel statusText;
+        private System.Windows.Forms.ToolStripStatusLabel statusSpacer;
+        private System.Windows.Forms.ToolStripStatusLabel statusError;
         private System.Windows.Forms.DataGridViewTextBoxColumn Lines;
         private System.Windows.Forms.DataGridViewTextBoxColumn FileName;
         private System.Windows.Forms.DataGridViewTextBoxColumn Ext;
