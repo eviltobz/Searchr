@@ -2,10 +2,12 @@
 bin/
 obj/
 *.suo
-*.ncrunchsolution
 *.csproj.user
+*.ncrunchsolution
+*.ncrunchsolution.user
 /Searchr.UI/History/
 packages/
 /.vs/
 /Searchr.UI/My.settings
 /Stable
+.cr/
