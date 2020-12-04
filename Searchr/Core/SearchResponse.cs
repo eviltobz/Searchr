@@ -6,11 +6,11 @@ namespace Searchr.Core
 {
     public class SearchResponse
     {
-        public BlockingCollection<SearchResult> Results { get; private set; }
+        public BlockingCollection<SearchResult> Results { get; }
         public int Hits;
         public int Misses;
         public Exception Error { get; private set; }
-        public List<Exception> Errors { get; private set; } = new List<Exception>();
+        public List<Exception> Errors { get; } = new List<Exception>();
 
         public SearchResponse()
         {

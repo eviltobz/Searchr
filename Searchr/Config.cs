@@ -9,12 +9,10 @@ namespace Searchr.UI
     public static class Config
     {
         private const string SettingsFile = @"My.settings";
-        private const string NotepadPlusPlus = @"C:\Program Files\Notepad++\notepad++.exe";
-        private const string NotepadPlusPlus86 = @"C:\Program Files (x86)\Notepad++\notepad++.exe";
 
-        public static Settings Settings { get; private set; } = LoadSettings(SettingsFile);
+        public static Settings Settings { get; } = LoadSettings(SettingsFile);
 
-        public static string HistoryDirectory { get; private set; } = FindHistoryDirectory();
+        public static string HistoryDirectory { get; } = FindHistoryDirectory();
 
         private static string FindHistoryDirectory()
         {
@@ -35,22 +33,6 @@ namespace Searchr.UI
             {
                 dir = Path.Combine("..", dir);
                 return FindDirectory(dir, searchDepth + 1);
-            }
-        }
-
-        public static string NotepadPlusPlusLocation()
-        {
-            if (File.Exists(NotepadPlusPlus))
-            {
-                return NotepadPlusPlus;
-            }
-            else if (File.Exists(NotepadPlusPlus86))
-            {
-                return NotepadPlusPlus86;
-            }
-            else
-            {
-                return null;
             }
         }
 

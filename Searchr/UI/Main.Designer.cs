@@ -1,6 +1,6 @@
 ﻿namespace Searchr.UI
 {
-    partial class frmMain
+    partial class Main
     {
         /// <summary>
         /// Required designer variable.
@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmMain));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Main));
             this.txtHidden = new System.Windows.Forms.TextBox();
             this.resultsTabs = new System.Windows.Forms.TabControl();
             this.tabNew = new System.Windows.Forms.TabPage();
@@ -78,7 +78,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
             this.MinimumSize = new System.Drawing.Size(1000, 500);
-            this.Name = "frmMain";
+            this.Name = "Main";
             this.Padding = new System.Windows.Forms.Padding(5);
             this.Text = "Searchr (.Net 5)";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.frmMain_FormClosed);

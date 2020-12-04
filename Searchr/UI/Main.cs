@@ -6,9 +6,9 @@ namespace Searchr.UI
 {
     using Searchr.Core;
 
-    public partial class frmMain : Form
+    public partial class Main : Form
     {
-        public frmMain()
+        public Main()
         {
             InitializeComponent();
         }

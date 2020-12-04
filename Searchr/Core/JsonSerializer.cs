@@ -3,7 +3,7 @@
     using System.Text;
     using System.Text.Json;
 
-    public class JsonSerializer : ISerializer
+    public class JsonSerializer //: ISerializer
     {
         private static readonly JsonSerializerOptions SerialisationOptions = new JsonSerializerOptions()
         {
