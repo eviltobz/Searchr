@@ -151,6 +151,8 @@
 
         private void SearchNow(bool filter)
         {
+            var timer = new System.Diagnostics.Stopwatch();
+            timer.Start();
             CurrentSearch = GetSearchRequest(filter);
             UpdateDetails();
 
@@ -260,7 +262,8 @@
 
                 this.InvokeAction(_ =>
                 {
-                    statusText.Text = $"Found {totalHits:n0} lines in {totalFiles:n0} files";
+                    timer.Stop();
+                    statusText.Text = $"Found {totalHits:n0} lines in {totalFiles:n0} files in {timer.Elapsed.TotalSeconds:N3} seconds";
 
                     if (response.Error is null)
                         statusError.Visible = false;
@@ -596,34 +599,29 @@
 
         private void dgResults_KeyDown(object sender, KeyEventArgs e)
         {
-            Debug.Print($"DOWN - Code:{e.KeyCode}");
+            //Debug.Print($"DOWN - Code:{e.KeyCode}");
             if (e.KeyCode == Keys.Return)
                 e.Handled = true;
         }
 
         private void dgResults_KeyUp(object sender, KeyEventArgs e)
         {
-            Debug.Print($"UP   - Code:{e.KeyCode}");
+            //Debug.Print($"UP   - Code:{e.KeyCode}");
             if (e.KeyCode == Keys.Return)
             {
                 e.Handled = true;
             }
-
         }
 
         private void dgResults_KeyPress(object sender, KeyPressEventArgs e)
         {
-
-            Debug.Print($"PRES - Char:{e.KeyChar}");
-
+            //Debug.Print($"PRES - Char:{e.KeyChar}");
             if (e.KeyChar == '\r')
             {
                 e.Handled = true;
                 if (activeRow != null && dgResults.SelectedRows.Count == 1)
                     OpenFile(defaultOpener);
             }
-
         }
-
     }
 }
