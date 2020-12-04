@@ -3,7 +3,7 @@
     using System.Windows.Forms;
     using Searchr.Core;
 
-    public static class Extensions
+    public static class UiExtensions
     {
         private static SearchResult SearchResult(this DataGridViewRow row) => row.Tag as SearchResult;
 
