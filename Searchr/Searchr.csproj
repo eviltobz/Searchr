@@ -8,10 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Searchr.Core\Searchr.Core.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Update="My.settings">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
