@@ -46,7 +46,7 @@
             // 
             this.resultsTabs.Controls.Add(this.tabNew);
             this.resultsTabs.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.resultsTabs.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.resultsTabs.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.resultsTabs.Location = new System.Drawing.Point(5, 5);
             this.resultsTabs.Margin = new System.Windows.Forms.Padding(0);
             this.resultsTabs.Name = "resultsTabs";
@@ -74,13 +74,13 @@
             this.ClientSize = new System.Drawing.Size(1379, 657);
             this.Controls.Add(this.resultsTabs);
             this.Controls.Add(this.txtHidden);
-            this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
             this.MinimumSize = new System.Drawing.Size(1000, 500);
             this.Name = "frmMain";
             this.Padding = new System.Windows.Forms.Padding(5);
-            this.Text = "Searchr";
+            this.Text = "Searchr (.Net 5)";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.frmMain_FormClosed);
             this.Load += new System.EventHandler(this.frmMain_Load);
             this.ResizeEnd += new System.EventHandler(this.frmMain_ResizeEnd);

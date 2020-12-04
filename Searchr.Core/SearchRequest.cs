@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿//using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -6,6 +6,8 @@ using System.Threading;
 
 namespace Searchr.Core
 {
+    using System.Text.Json.Serialization;
+
     public class SearchRequest
     {
         public string Directory { get; set; }

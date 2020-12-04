@@ -1,18 +1,24 @@
-﻿using Newtonsoft.Json;
-using System.Text;
-
-namespace Searchr.Core
+﻿namespace Searchr.Core
 {
+    using System.Text;
+    using System.Text.Json;
+
     public class JsonSerializer : ISerializer
     {
+        private static readonly JsonSerializerOptions SerialisationOptions = new JsonSerializerOptions()
+        {
+            IncludeFields = true,
+            WriteIndented = true
+        };
         public byte[] Serialize<T>(T item)
         {
-            return Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(item, Formatting.Indented));
+            var serialised = System.Text.Json.JsonSerializer.Serialize(item, SerialisationOptions);
+            return Encoding.UTF8.GetBytes(serialised);
         }
 
         public T Deserialize<T>(byte[] data)
         {
-            return JsonConvert.DeserializeObject<T>(Encoding.UTF8.GetString(data));
+            return System.Text.Json.JsonSerializer.Deserialize<T>(data, SerialisationOptions);
         }
     }
 }

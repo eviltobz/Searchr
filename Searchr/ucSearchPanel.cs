@@ -210,11 +210,14 @@
                         totalFiles++;
                         totalHits += result.TotalCount;
 
-                        var row = new DataGridViewRow();
+                        var row = new DataGridViewRow()
+                        {
+                            Height = 22,
+                            Tag = result
+                        };
 
                         var matchDetail = BuildToolTip(result);
 
-                        row.Tag = result;
 
                         row.Cells.Add(new DataGridViewTextBoxCell
                         {
