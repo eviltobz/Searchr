@@ -452,6 +452,14 @@
             }
         }
 
+        private void MultiOpenLocation(MultiOpener opener)
+        {
+            var files = dgResults.SelectedRows.OfType<DataGridViewRow>().Select(x => $"\"{x.FullPath()}\"");
+            var fileString = string.Join(" ", files);
+            var commandLine = opener.CommandLinePattern + $" {fileString}";
+            Process.Start(opener.Path, commandLine);
+        }
+
         private void SetUpOpeners()
         {
             foreach (var editor in FileOpeners)
@@ -462,6 +470,13 @@
                 AddMenuItem(opener.Name + " Here", (s, e) => OpenLocation(opener));
             ResultsContextMenu.Items.Add(new ToolStripSeparator());
 
+            foreach (var opener in MultiOpeners)
+            {
+                opener.MenuItem = AddMenuItem("Open with " + opener.Name, (s, e) => MultiOpenLocation(opener));
+            }
+
+            ResultsContextMenu.Items.Add(new ToolStripSeparator());
+
             AddMenuItem("Copy folder to clipboard", (s, e) => Clipboard.SetText(activeRow.Folder()));
             AddMenuItem("Copy filename to clipboard", (s, e) => Clipboard.SetText(activeRow.FileName()));
             AddMenuItem("Copy full path to clipboard", (s, e) => Clipboard.SetText(activeRow.FullPath()));
@@ -470,6 +485,18 @@
             AddMenuItem("Clear results", (s, e) => Clear());
 
             defaultOpener = FileOpeners.Union(LocationOpeners).First(x => x.DoubleClickAction);
+            ResultsContextMenu.Opening += ResultsContextMenu_Opening;
+        }
+
+        private void ResultsContextMenu_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            foreach (var opener in MultiOpeners)
+            {
+                if (dgResults.SelectedRows.Count > 1 && dgResults.SelectedRows.Count <= opener.MaxFiles)
+                    opener.MenuItem.Enabled = true;
+                else
+                    opener.MenuItem.Enabled = false;
+            }
         }
 
         private ToolStripMenuItem AddMenuItem(string name, EventHandler handler)
@@ -496,11 +523,34 @@
             public bool DoubleClickAction { get; }
         }
 
+        private class MultiOpener
+        {
+            public MultiOpener(string name, string path, int maxFiles, string commandLinePattern = "")
+            {
+                Name = name;
+                Path = path;
+                MaxFiles = maxFiles;
+                CommandLinePattern = commandLinePattern;
+            }
+
+            public string Name { get; }
+            public string Path { get; }
+            public int MaxFiles { get; }
+            public string CommandLinePattern { get; }
+            public ToolStripMenuItem MenuItem { get; set; }
+        }
+
         private delegate string CommandLineBuilder(string folder, string filename, string fullpath);
 
         private static readonly Opener[] FileOpeners = {
             new Opener("vim", @"C:\tools\vim\vim82\gvim.exe", doubleClickAction:true),
             new Opener("VsCode", @"C:\Program Files\Microsoft VS Code\Code.exe"),
+        };
+
+        private static readonly MultiOpener[] MultiOpeners =
+        {
+            new MultiOpener("KDiff3", @"C:\Program Files\KDiff3\kdiff3.exe", 3),
+            new MultiOpener("Vimdiff", @"C:\tools\vim\vim82\gvim.exe", 4, "-d"),
         };
 
         private static readonly Opener[] LocationOpeners = {
