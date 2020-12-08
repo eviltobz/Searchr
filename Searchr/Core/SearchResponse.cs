@@ -9,7 +9,7 @@ namespace Searchr.Core
         public BlockingCollection<SearchResult> Results { get; }
         public int Hits;
         public int Misses;
-        public Exception Error { get; private set; }
+        public Exception? Error { get; private set; }
         public List<Exception> Errors { get; } = new List<Exception>();
 
         public SearchResponse()

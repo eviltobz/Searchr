@@ -25,13 +25,13 @@
             }
         }
 
-        private static SearchResult SearchResult(this DataGridViewRow row) => row.Tag as SearchResult;
+        private static SearchResult? SearchResult(this DataGridViewRow row) => row!.Tag as SearchResult;
 
-        public static string Folder(this DataGridViewRow row) => row.SearchResult().FullFolder;
+        public static string Folder(this DataGridViewRow row) => row!.SearchResult()!.FullFolder;
 
-        public static string FileName(this DataGridViewRow row) => row.SearchResult().FileName;
+        public static string FileName(this DataGridViewRow row) => row!.SearchResult()!.FileName;
 
-        public static string FullPath(this DataGridViewRow row) => row.SearchResult().FullPath;
+        public static string FullPath(this DataGridViewRow row) => row!.SearchResult()!.FullPath;
 
         public static string Truncate(this string content, int maxLength)
         {

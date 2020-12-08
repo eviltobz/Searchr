@@ -6,6 +6,8 @@ using System.Linq;
 
 namespace Searchr.UI
 {
+    using System;
+
     public static class Config
     {
         private const string SettingsFile = @"My.settings";
@@ -19,7 +21,7 @@ namespace Searchr.UI
             return FindDirectory("History") ?? (Debugger.IsAttached ? @"..\..\History" : "History");
         }
 
-        private static string FindDirectory(string dir, int searchDepth = 0)
+        private static string? FindDirectory(string dir, int searchDepth = 0)
         {
             if (Directory.Exists(dir))
             {
@@ -95,7 +97,7 @@ namespace Searchr.UI
             }
         }
 
-        public static SearchRequest LatestSearch()
+        public static SearchRequest? LatestSearch()
         {
             return EnumerateHistory().FirstOrDefault();
         }
@@ -109,10 +111,10 @@ namespace Searchr.UI
                 dir.Create();
             }
 
-            return dir.EnumerateFiles().OrderByDescending(f => f.LastWriteTime).Select(fi => LoadSearch(fi.FullName));
+            return dir.EnumerateFiles().OrderByDescending(f => f.LastWriteTime).Select(fi => LoadSearch(fi.FullName)).Where(x => x is not null)!;
         }
 
-        private static SearchRequest LoadSearch(string file)
+        private static SearchRequest? LoadSearch(string file)
         {
             var serializer = new JsonSerializer();
             var search = serializer.Deserialize<SearchRequest>(File.ReadAllBytes(file));
@@ -124,7 +126,10 @@ namespace Searchr.UI
             if (File.Exists(file))
             {
                 var serializer = new JsonSerializer();
-                return serializer.Deserialize<Settings>(File.ReadAllBytes(file));
+                var settings = serializer.Deserialize<Settings>(File.ReadAllBytes(file));
+                if(settings is null)
+                    throw new NullReferenceException("Settings should not be null. File might be corrupted");
+                return settings;
             }
             else
             {

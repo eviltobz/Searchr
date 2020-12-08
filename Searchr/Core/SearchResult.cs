@@ -16,16 +16,20 @@ namespace Searchr.Core
         public SearchResult(FileInfo file, string searchRoot)
         {
             this.File = file;
-            var full = file.Directory.FullName;
+            var full = file.Directory!.FullName;
             RelativeFolder = full.Replace(searchRoot, ".");
         }
 
-        private SearchResult() { }
+        private SearchResult()
+        {
+            File = new FileInfo(".");
+            RelativeFolder = string.Empty;
+        }
 
         public string FileName => File.Name;
         public string FullPath => File.FullName;
         public string FileType => File.Extension;
-        public string FullFolder => File.Directory.FullName;
+        public string FullFolder => File!.Directory!.FullName;
         public string RelativeFolder { get; }
 
         public long FileSize { get => (File.Length / 1024 + (File.Length % 1024 == 0 ? 0 : 1)); }

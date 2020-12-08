@@ -14,7 +14,7 @@
     public partial class ucSearchPanel : UserControl
     {
         private readonly Action<SearchRequest> setDetail;
-        public SearchRequest CurrentSearch;
+        public SearchRequest? CurrentSearch;
         private Opener defaultOpener;
 
         public ucSearchPanel(Action<SearchRequest> setDetail)
@@ -102,8 +102,8 @@
             SetupCheckBox(chkSearchFileName);
             SetupCheckBox(chkSearchFilePath);
 
-            txtSearchTerm.Select(txtSearchTerm.Text.Length, 0);
-            ucDirectory1.Directory.Select(ucDirectory1.Directory.Text.Length, 0);
+            txtSearchTerm.Select(txtSearchTerm.Text!.Length, 0);
+            ucDirectory1.Directory.Select(ucDirectory1.Directory!.Text!.Length, 0);
             cmbIncludeFilePatterns.Select(cmbIncludeFilePatterns.Text.Length, 0);
             cmbExcludeFilePatterns.Select(cmbExcludeFilePatterns.Text.Length, 0);
             cmbExcludeFolderNames.Select(cmbExcludeFolderNames.Text.Length, 0);
@@ -116,7 +116,7 @@
 
         private void UpdateDetails()
         {
-            setDetail(CurrentSearch);
+            setDetail(CurrentSearch!);
         }
 
         private void btnSearch_Click(object sender, EventArgs e)
@@ -131,7 +131,7 @@
 
         private void btnStop_Click(object sender, EventArgs e)
         {
-            CurrentSearch.Abort();
+            CurrentSearch!.Abort();
         }
 
         private void txtSearchTerm_KeyPress(object sender, KeyPressEventArgs e)
@@ -313,25 +313,23 @@
                 ucDirectory1.Directory.Text = directory;
             }
 
-            var request = new SearchRequest
-            {
-                Directory = ucDirectory1.Directory.Text,
-                DirectoryOption = chkRecursive.Checked ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly,
-                SearchTerm = txtSearchTerm.Text,
-                SearchMethod = chkRegex.Checked ? SearchMethod.SingleLineRegex : SearchMethod.SingleLine,
-                MatchCase = chkMatchCase.Checked,
-                ParallelSearches = 4,
-                ExcludeFileWildcards = GetExtensions(cmbExcludeFilePatterns.Text),
-                IncludeFileWildcards = GetExtensions(cmbIncludeFilePatterns.Text),
-                ExcludeFolderNames = GetFolders(cmbExcludeFolderNames.Text),
-                ExcludeSystem = !chkIncludeHidden.Checked,
-                ExcludeHidden = !chkIncludeSystem.Checked,
-                ExcludeBinaryFiles = !chkIncludeBinaryFiles.Checked,
-                SearchFileContents = chkSearchFileContents.Checked,
-                SearchFileName = chkSearchFileName.Checked,
-                SearchFilePath = chkSearchFilePath.Checked,
-                ParentSearch = filter ? CurrentSearch : null
-            };
+            var request = new SearchRequest(
+                ucDirectory1.Directory.Text,
+                chkRecursive.Checked ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly,
+                txtSearchTerm.Text,
+                chkRegex.Checked ? SearchMethod.SingleLineRegex : SearchMethod.SingleLine,
+                chkMatchCase.Checked,
+                4,
+                GetExtensions(cmbExcludeFilePatterns.Text),
+                GetExtensions(cmbIncludeFilePatterns.Text),
+                GetFolders(cmbExcludeFolderNames.Text),
+                !chkIncludeHidden.Checked,
+                !chkIncludeSystem.Checked,
+                !chkIncludeBinaryFiles.Checked,
+                chkSearchFileContents.Checked,
+                chkSearchFileName.Checked,
+                chkSearchFilePath.Checked,
+                filter ? CurrentSearch : null);
 
             return request;
         }
@@ -374,24 +372,24 @@
 
         private void SetupCheckBox(CheckBox checkbox)
         {
-            checkbox.CheckedChanged += CheckBox_CheckedChanged;
+            checkbox.CheckedChanged += Checkbox_CheckedChanged;
 
-            CheckBox_CheckedChanged(checkbox, null);
+            Checkbox_CheckedChanged(checkbox, null!);
 
             checkbox.Height = 27;
         }
 
-        readonly Color blue = Color.FromArgb(114, 200, 255);
-        readonly Color red = Color.FromArgb(255, 161, 175);
-        readonly Color green = Color.FromArgb(175, 255, 161);
-
-        private void CheckBox_CheckedChanged(object sender, EventArgs e)
+        private void Checkbox_CheckedChanged(object? sender, EventArgs e)
         {
             if (sender is CheckBox checkbox)
             {
                 Colorise(checkbox, blue, SystemColors.Control);
             }
         }
+
+        readonly Color blue = Color.FromArgb(114, 200, 255);
+        readonly Color red = Color.FromArgb(255, 161, 175);
+        readonly Color green = Color.FromArgb(175, 255, 161);
 
         private void ButtonColorSet()
         {
@@ -437,8 +435,8 @@
         }
         private class RowCompare : IEqualityComparer<DataGridViewRow>
         {
-            public bool Equals(DataGridViewRow x, DataGridViewRow y) =>
-                x.Folder() == y.Folder();
+            public bool Equals(DataGridViewRow? x, DataGridViewRow? y) =>
+                x?.Folder() == y?.Folder();
 
             public int GetHashCode(DataGridViewRow obj) =>
                 obj.Folder().GetHashCode();
@@ -483,9 +481,9 @@
 
             ResultsContextMenu.Items.Add(new ToolStripSeparator());
 
-            AddMenuItem("Copy folder to clipboard", (s, e) => Clipboard.SetText(activeRow.Folder()));
-            AddMenuItem("Copy filename to clipboard", (s, e) => Clipboard.SetText(activeRow.FileName()));
-            AddMenuItem("Copy full path to clipboard", (s, e) => Clipboard.SetText(activeRow.FullPath()));
+            AddMenuItem("Copy folder to clipboard", (s, e) => Clipboard.SetText(activeRow?.Folder()));
+            AddMenuItem("Copy filename to clipboard", (s, e) => Clipboard.SetText(activeRow?.FileName()));
+            AddMenuItem("Copy full path to clipboard", (s, e) => Clipboard.SetText(activeRow?.FullPath()));
             ResultsContextMenu.Items.Add(new ToolStripSeparator());
 
             AddMenuItem("Clear results", (s, e) => Clear());
@@ -499,9 +497,9 @@
             foreach (var opener in MultiOpeners)
             {
                 if (dgResults.SelectedRows.Count > 1 && dgResults.SelectedRows.Count <= opener.MaxFiles)
-                    opener.MenuItem.Enabled = true;
+                    opener!.MenuItem!.Enabled = true;
                 else
-                    opener.MenuItem.Enabled = false;
+                    opener!.MenuItem!.Enabled = false;
             }
         }
 
@@ -543,7 +541,7 @@
             public string Path { get; }
             public int MaxFiles { get; }
             public string CommandLinePattern { get; }
-            public ToolStripMenuItem MenuItem { get; set; }
+            public ToolStripMenuItem? MenuItem { get; set; }
         }
 
         private delegate string CommandLineBuilder(string folder, string filename, string fullpath);
@@ -592,7 +590,7 @@
             }
         }
 
-        private DataGridViewRow activeRow = null;
+        private DataGridViewRow? activeRow = null;
 
         private void dgResults_SelectionChanged(object sender, EventArgs e)
         {

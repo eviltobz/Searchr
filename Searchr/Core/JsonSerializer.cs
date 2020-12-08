@@ -16,7 +16,7 @@
             return Encoding.UTF8.GetBytes(serialised);
         }
 
-        public T Deserialize<T>(byte[] data)
+        public T? Deserialize<T>(byte[] data)
         {
             return System.Text.Json.JsonSerializer.Deserialize<T>(data, SerialisationOptions);
         }

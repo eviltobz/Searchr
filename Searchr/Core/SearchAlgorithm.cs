@@ -37,11 +37,11 @@ namespace Searchr.Core
                 if (request.SearchFileContents)
                 {
                     int lineNumber = 1;
-                    string line;
+                    string? line;
 
                     using (var fileStream = new StreamReader(file.OpenRead()))
                     {
-                        while ((line = fileStream.ReadLine()) != null)
+                        while ((line = fileStream!.ReadLine()) != null)
                         {
                             if (request.Aborted)
                             {
@@ -89,11 +89,11 @@ namespace Searchr.Core
                 if (request.SearchFileContents)
                 {
                     int lineNumber = 1;
-                    string line;
+                    string? line;
 
                     using (var fileStream = new StreamReader(file.OpenRead()))
                     {
-                        while ((line = fileStream.ReadLine()) != null)
+                        while ((line = fileStream!.ReadLine()) != null)
                         {
                             if (request.Aborted)
                             {

@@ -65,7 +65,7 @@ namespace Searchr.UI
             }
             else
             {
-                tab.Text = search.SearchTerm.Truncate(10);
+                tab.Text = search.SearchTerm?.Truncate(10);
                 tab.ToolTipText = BuildSearchDescription(search).text;
             }
         }
@@ -95,6 +95,9 @@ namespace Searchr.UI
         private void resultsTabs_MouseClick(object sender, MouseEventArgs e)
         {
             var tabControl = sender as TabControl;
+            if (tabControl is null)
+                return;
+
             var tabs = tabControl.TabPages;
 
             if (e.Button == MouseButtons.Middle)
@@ -131,9 +134,9 @@ namespace Searchr.UI
             Config.SaveSettings();
         }
 
-        private DataGridView CurrentResults() => CurrentSearchPanel?.Results();
+        private DataGridView? CurrentResults() => CurrentSearchPanel?.Results();
 
-        private ucSearchPanel CurrentSearchPanel => resultsTabs.SelectedTab.Controls.OfType<ucSearchPanel>().FirstOrDefault();
+        private ucSearchPanel? CurrentSearchPanel => resultsTabs.SelectedTab.Controls.OfType<ucSearchPanel>().FirstOrDefault();
 
         private void AddResultsTab()
         {
@@ -172,8 +175,8 @@ namespace Searchr.UI
         {
             if (keyData == (Keys.Control | Keys.F))
             {
-                CurrentSearchPanel.SearchTerm.Focus();
-                CurrentSearchPanel.SearchTerm.SelectAll();
+                CurrentSearchPanel?.SearchTerm.Focus();
+                CurrentSearchPanel?.SearchTerm.SelectAll();
                 return true;
             }
             else if (keyData == (Keys.Control | Keys.T))
@@ -185,7 +188,7 @@ namespace Searchr.UI
             {
                 if (resultsTabs.TabPages.Count == 2)
                 {
-                    CurrentSearchPanel.Clear();
+                    CurrentSearchPanel?.Clear();
                     resultsTabs.SelectedTab.Text = "Searchr";
                 }
                 else

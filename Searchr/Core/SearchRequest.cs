@@ -25,7 +25,7 @@ namespace Searchr.Core
         public bool SearchFileContents { get; set; }
         public bool SearchFileName { get; set; }
         public bool SearchFilePath { get; set; }
-        public SearchRequest ParentSearch { get; set; }
+        public SearchRequest? ParentSearch { get; set; }
 
         private CancellationTokenSource cancellationSource;
 
@@ -34,27 +34,64 @@ namespace Searchr.Core
 
         public bool Aborted => CancellationToken.IsCancellationRequested;
 
-        public SearchRequest()
+        public SearchRequest(
+            string directory,
+            SearchOption directoryOption,
+            string searchTerm,
+            SearchMethod searchMethod,
+            bool matchCase,
+            int parallelSearches,
+            List<string> excludeFileWildcards,
+            List<string> includeFileWildcards,
+            List<string> excludeFolderNames,
+            bool excludeSystem,
+            bool excludeHidden,
+            bool excludeBinaryFiles,
+            bool searchFileContents,
+            bool searchFileName,
+            bool searchFilePath,
+            SearchRequest? parentSearch)
         {
-            Directory = null;
-            DirectoryOption = SearchOption.AllDirectories;
-            SearchTerm = null;
-            SearchMethod = SearchMethod.SingleLine;
-            MatchCase = false;
-            ParallelSearches = 4;
-            ExcludeFileWildcards = new List<string>();
-            IncludeFileWildcards = new List<string>();
-            ExcludeFolderNames = new List<string>();
-            ExcludeHidden = false;
-            ExcludeSystem = false;
-            ExcludeBinaryFiles = false;
-            SearchFileContents = true;
-            SearchFileName = false;
-            SearchFilePath = false;
+            Directory = directory;
+            DirectoryOption = directoryOption;
+            SearchTerm = searchTerm;
+            SearchMethod = searchMethod;
+            MatchCase = matchCase;
+            ParallelSearches = parallelSearches;
+            ExcludeFileWildcards = excludeFileWildcards;
+            IncludeFileWildcards = includeFileWildcards;
+            ExcludeFolderNames = excludeFolderNames;
+            ExcludeSystem = excludeSystem;
+            ExcludeHidden = excludeHidden;
+            ExcludeBinaryFiles = excludeBinaryFiles;
+            SearchFileContents = searchFileContents;
+            SearchFileName = searchFileName;
+            SearchFilePath = searchFilePath;
+            ParentSearch = parentSearch;
 
             cancellationSource = new CancellationTokenSource();
         }
 
+        //public SearchRequest()
+        //{
+        //    Directory = null;
+        //    DirectoryOption = SearchOption.AllDirectories;
+        //    SearchTerm = null;
+        //    SearchMethod = SearchMethod.SingleLine;
+        //    MatchCase = false;
+        //    ParallelSearches = 4;
+        //    ExcludeFileWildcards = new List<string>();
+        //    IncludeFileWildcards = new List<string>();
+        //    ExcludeFolderNames = new List<string>();
+        //    ExcludeHidden = false;
+        //    ExcludeSystem = false;
+        //    ExcludeBinaryFiles = false;
+        //    SearchFileContents = true;
+        //    SearchFileName = false;
+        //    SearchFilePath = false;
+
+        //    cancellationSource = new CancellationTokenSource();
+        //}
         public void Abort()
         {
             this.cancellationSource.Cancel();

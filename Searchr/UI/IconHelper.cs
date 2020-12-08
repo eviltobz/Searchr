@@ -31,7 +31,7 @@ namespace Searchr.UI
         [DllImport("user32.dll")]
         private static extern void DestroyIcon(IntPtr handle);
 
-        public static Icon GetSmallIcon(string path)
+        public static Icon? GetSmallIcon(string path)
         {
             SHFILEINFO info = new SHFILEINFO();
             SHGetFileInfo(path, 0, ref info, (uint)Marshal.SizeOf(info), SHGFI_ICON | SHGFI_SMALLICON | SHGFI_USEFILEATTRIBUTES);
@@ -47,7 +47,7 @@ namespace Searchr.UI
             }
         }
 
-        public static Icon GetLargeIcon(string path)
+        public static Icon? GetLargeIcon(string path)
         {
             SHFILEINFO info = new SHFILEINFO();
             SHGetFileInfo(path, 0, ref info, (uint)Marshal.SizeOf(info), SHGFI_ICON | SHGFI_LARGEICON | SHGFI_USEFILEATTRIBUTES);
@@ -63,17 +63,17 @@ namespace Searchr.UI
             }
         }
 
-        static readonly ConcurrentDictionary<string, Icon> smallIconCache = new ConcurrentDictionary<string, Icon>();
+        static readonly ConcurrentDictionary<string, Icon?> smallIconCache = new ConcurrentDictionary<string, Icon?>();
 
-        public static Icon GetSmallIconCached(string path, string extension)
+        public static Icon? GetSmallIconCached(string path, string extension)
         {
             if (File.Exists(path) && extension.InList(".exe", ".ico")) return GetSmallIcon(path);
             return smallIconCache.GetOrAdd(extension, _ => GetSmallIcon(extension));
         }
 
-        static readonly ConcurrentDictionary<string, Icon> largeIconCache = new ConcurrentDictionary<string, Icon>();
+        static readonly ConcurrentDictionary<string, Icon?> largeIconCache = new ConcurrentDictionary<string, Icon?>();
 
-        public static Icon GetLargeIconCached(string path, string extension)
+        public static Icon? GetLargeIconCached(string path, string extension)
         {
             if (File.Exists(path) && extension.InList(".exe", ".ico")) return GetLargeIcon(path);
             return largeIconCache.GetOrAdd(extension, _ => GetLargeIcon(extension));
