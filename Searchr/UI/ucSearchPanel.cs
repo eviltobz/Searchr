@@ -221,8 +221,7 @@
 
                         row.Cells.Add(new DataGridViewTextBoxCell
                         {
-                            Value = result.TotalCount
-                                ,
+                            Value = result.TotalCount,
                             ToolTipText = matchDetail
                         });
 
@@ -233,19 +232,20 @@
 
                         row.Cells.Add(new DataGridViewTextBoxCell
                         {
-                            Value = result.FileType
+                            Value = result.FileType,
+                            ToolTipText = string.Empty
                         });
 
                         row.Cells.Add(new DataGridViewTextBoxCell
                         {
-                            Value = result.RelativeFolder
-                            ,
+                            Value = result.RelativeFolder,
                             ToolTipText = result.FullFolder
                         });
 
                         row.Cells.Add(new DataGridViewTextBoxCell
                         {
-                            Value = result.FileSize
+                            Value = result.FileSize,
+                            ToolTipText = string.Empty
                         });
 
                         dgResults.InvokeAction(dg =>
@@ -294,7 +294,13 @@
         private string BuildToolTip(SearchResult result)
         {
             const int PreviewLength = 120;
-            var preview = result.TotalCount > 0 ? "Matches:" : "";
+            var preview = result.TotalCount switch
+            {
+                0 => "",
+                1 => "1 Match:",
+                _ => $"{result.TotalCount} Matches:"
+            };
+
             foreach ((int num, string content) in result.Matches)
             {
                 preview += $"\n#{num}: {content.Truncate(PreviewLength)}";

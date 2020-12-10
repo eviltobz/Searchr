@@ -11,6 +11,18 @@ and add a UI to tweak it
 * file & path openers
 * binary file types
 
+## FileOpeners
+Should be able to open multiple files in a single instance _or_ multiple instances of an editor
+* vim defaults to opening files in a new instance, but a command line could open a new instance with multiple files (dunno about adding to an already-open instance though)
+* VsCode defaults to a single instance, so opening new files adds em.
+* * Is it possible to force a new instance with the right command line args?
+* * You can manually open another instance. Then doing "open in code" will use the last active instance.
+Might need to rethink the opener vs multiopener thing. Multiopener is (currently) just diffs, and is special-case compared to files, with very limited numbers that can be opened together. Mayhap that should just be a DiffOpener, then FileOpener can add some options for single vs multi instancing
+
+## MouseOver on Binary & System files to say what it's looking for?
+* current implementation is a differently-skinned checkbox, and that don't seem to have a tooltip property to set.
+
+
 # .Net Framework 4.8 to .Net 5 Upgrade
 From some simple timings, the .Net 5 code was faster for big searches, but the Framework code was faster with a small search where drawing to the screen became a significant part of the run. This may be possible to improve by looking at how results are marshalled back to the UI thread. Or something.
 

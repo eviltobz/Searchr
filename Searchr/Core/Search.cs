@@ -122,8 +122,8 @@ namespace Searchr.Core
 
         private static IEnumerable<string> EnumerateFiles(SearchRequest request, string path, string searchPattern, SearchOption searchOption)
         {
-            IEnumerable<string> files = null;
-            IEnumerable<string> subdirs = null;
+            IEnumerable<string>? files = null;
+            IEnumerable<string>? subdirs = null;
 
             if (request.Aborted)
             {
