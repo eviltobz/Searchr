@@ -1,6 +1,8 @@
-﻿namespace System.Windows.Forms
+﻿namespace Searchr.UI
 {
     using Searchr.Core;
+    using System;
+    using System.Windows.Forms;
 
     public static class ControlExtensions
     {
@@ -35,6 +37,8 @@
 
         public static string Truncate(this string content, int maxLength)
         {
+            if (content is null)
+                return string.Empty;
             var a = content.Trim();
             return a.Length > maxLength
                        ? a.Substring(0, maxLength) + "…"

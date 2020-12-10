@@ -5,6 +5,7 @@ obj/
 *.csproj.user
 *.ncrunchsolution
 *.ncrunchsolution.user
+_ncrunch_*
 /Searchr.UI/History/
 packages/
 /.vs/
