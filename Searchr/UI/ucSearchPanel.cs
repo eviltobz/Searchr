@@ -15,7 +15,7 @@
     {
         private readonly Action<SearchRequest> setDetail;
         public SearchRequest? CurrentSearch;
-        private Opener defaultOpener;
+        private FileOpener defaultOpener;
 
         public ucSearchPanel(Action<SearchRequest> setDetail)
         {
@@ -29,24 +29,24 @@
 
         public void Setup()
         {
-            if (Config.Settings.ColumnDisplayIndex0 +
-                Config.Settings.ColumnDisplayIndex1 +
-                Config.Settings.ColumnDisplayIndex2 +
-                Config.Settings.ColumnDisplayIndex3 +
-                Config.Settings.ColumnDisplayIndex4 > 0)
+            if (Config.Settings.ResultsPane.ColIndexLines +
+                Config.Settings.ResultsPane.ColIndexName +
+                Config.Settings.ResultsPane.ColIndexExtension +
+                Config.Settings.ResultsPane.ColIndexDirectory +
+                Config.Settings.ResultsPane.ColIndexSize > 0)
             {
-                dgResults.Columns[4].DisplayIndex = Config.Settings.ColumnDisplayIndex4;
-                dgResults.Columns[3].DisplayIndex = Config.Settings.ColumnDisplayIndex3;
-                dgResults.Columns[2].DisplayIndex = Config.Settings.ColumnDisplayIndex2;
-                dgResults.Columns[1].DisplayIndex = Config.Settings.ColumnDisplayIndex1;
-                dgResults.Columns[0].DisplayIndex = Config.Settings.ColumnDisplayIndex0;
+                dgResults.Columns[4].DisplayIndex = Config.Settings.ResultsPane.ColIndexSize;
+                dgResults.Columns[3].DisplayIndex = Config.Settings.ResultsPane.ColIndexDirectory;
+                dgResults.Columns[2].DisplayIndex = Config.Settings.ResultsPane.ColIndexExtension;
+                dgResults.Columns[1].DisplayIndex = Config.Settings.ResultsPane.ColIndexName;
+                dgResults.Columns[0].DisplayIndex = Config.Settings.ResultsPane.ColIndexLines;
             }
 
-            dgResults.Columns[0].Width = Config.Settings.ColumnWidth0;
-            dgResults.Columns[1].Width = Config.Settings.ColumnWidth1;
-            dgResults.Columns[2].Width = Config.Settings.ColumnWidth2;
-            dgResults.Columns[3].Width = Config.Settings.ColumnWidth3;
-            dgResults.Columns[4].Width = Config.Settings.ColumnWidth4;
+            dgResults.Columns[0].Width = Config.Settings.ResultsPane.ColWidthLines;
+            dgResults.Columns[1].Width = Config.Settings.ResultsPane.ColWidthName;
+            dgResults.Columns[2].Width = Config.Settings.ResultsPane.ColWidthExtension;
+            dgResults.Columns[3].Width = Config.Settings.ResultsPane.ColWidthDirectory;
+            dgResults.Columns[4].Width = Config.Settings.ResultsPane.ColWidthSize;
 
             dgResults.Columns[4].DefaultCellStyle.Format = "#,# KB";
 
@@ -427,18 +427,35 @@
                                   (int)Math.Max(0, src.B * ratio));
         }
 
-        private void OpenFile(Opener opener)
-        {
-            foreach (var row in dgResults.SelectedRows.OfType<DataGridViewRow>())
-            {
-                var commandLine = opener.CommandLinePattern
-                    .Replace("[folder]", row.Folder())
-                    .Replace("[filename]", row.FileName())
-                    .Replace("[fullpath]", row.FullPath());
+        //private void OpenFile(Opener opener)
+        //{
+        //    foreach (var row in dgResults.SelectedRows.OfType<DataGridViewRow>())
+        //    {
+        //        var commandLine = opener.CommandLinePattern
+        //            .Replace("[folder]", row.Folder())
+        //            .Replace("[filename]", row.FileName())
+        //            .Replace("[fullpath]", row.FullPath());
 
-                Process.Start(opener.Path, commandLine);
+        //        Process.Start(opener.Path, commandLine);
+        //    }
+        //}
+        private void OpenFile(FileOpener opener)
+        {
+            if (opener.MultiFile)
+            {
+                var paths = dgResults.SelectedRows.OfType<DataGridViewRow>().Select(r => $"\"{r.FullPath()}\"");
+                var command = string.Join(" ", paths);
+                Debug.Print($"-- {opener.Path} {command}");
+
+                Process.Start(opener.Path, command);
             }
+            else
+                foreach (var row in dgResults.SelectedRows.OfType<DataGridViewRow>())
+                {
+                    Process.Start(opener.Path, $"\"{row.FullPath()}\"");
+                }
         }
+
         private class RowCompare : IEqualityComparer<DataGridViewRow>
         {
             public bool Equals(DataGridViewRow? x, DataGridViewRow? y) =>
@@ -448,21 +465,40 @@
                 obj.Folder().GetHashCode();
         }
 
-        private void OpenLocation(Opener opener)
+        //private void OpenLocation(Opener opener)
+        //{
+        //    var folders = dgResults.SelectedRows.OfType<DataGridViewRow>().Distinct(new RowCompare());
+        //    foreach (var row in folders)
+        //    {
+        //        var commandLine = opener.CommandLinePattern
+        //            .Replace("[folder]", row.Folder())
+        //            .Replace("[filename]", row.FileName())
+        //            .Replace("[fullpath]", row.FullPath());
+
+        //        Process.Start(opener.Path, commandLine);
+        //    }
+        //}
+        private void OpenLocation(LocationOpener opener)
         {
             var folders = dgResults.SelectedRows.OfType<DataGridViewRow>().Distinct(new RowCompare());
             foreach (var row in folders)
             {
                 var commandLine = opener.CommandLinePattern
                     .Replace("[folder]", row.Folder())
-                    .Replace("[filename]", row.FileName())
                     .Replace("[fullpath]", row.FullPath());
 
                 Process.Start(opener.Path, commandLine);
             }
         }
 
-        private void MultiOpenLocation(MultiOpener opener)
+        //private void MultiOpenLocation(MultiOpener opener)
+        //{
+        //    var files = dgResults.SelectedRows.OfType<DataGridViewRow>().Select(x => $"\"{x.FullPath()}\"");
+        //    var fileString = string.Join(" ", files);
+        //    var commandLine = opener.CommandLinePattern + $" {fileString}";
+        //    Process.Start(opener.Path, commandLine);
+        //}
+        private void DiffOpenLocation(DiffOpener opener)
         {
             var files = dgResults.SelectedRows.OfType<DataGridViewRow>().Select(x => $"\"{x.FullPath()}\"");
             var fileString = string.Join(" ", files);
@@ -470,20 +506,51 @@
             Process.Start(opener.Path, commandLine);
         }
 
+        //private void SetUpOpeners()
+        //{
+        //    foreach (var editor in FileOpeners)
+        //        AddMenuItem("Open file in " + editor.Name, (s, e) => OpenFile(editor));
+        //    ResultsContextMenu.Items.Add(new ToolStripSeparator());
+
+        //    foreach (var opener in LocationOpeners)
+        //        AddMenuItem(opener.Name + " Here", (s, e) => OpenLocation(opener));
+        //    ResultsContextMenu.Items.Add(new ToolStripSeparator());
+
+        //    foreach (var opener in MultiOpeners)
+        //    {
+        //        opener.MenuItem = AddMenuItem("Open with " + opener.Name, (s, e) => MultiOpenLocation(opener));
+        //    }
+
+        //    ResultsContextMenu.Items.Add(new ToolStripSeparator());
+
+        //    AddMenuItem("Copy folder to clipboard", (s, e) => Clipboard.SetText(activeRow?.Folder()));
+        //    AddMenuItem("Copy filename to clipboard", (s, e) => Clipboard.SetText(activeRow?.FileName()));
+        //    AddMenuItem("Copy full path to clipboard", (s, e) => Clipboard.SetText(activeRow?.FullPath()));
+        //    ResultsContextMenu.Items.Add(new ToolStripSeparator());
+
+        //    AddMenuItem("Clear results", (s, e) => Clear());
+
+        //    defaultOpener = FileOpeners.Union(LocationOpeners).First(x => x.DoubleClickAction);
+        //    ResultsContextMenu.Opening += ResultsContextMenu_Opening;
+        //}
         private void SetUpOpeners()
         {
-            foreach (var editor in FileOpeners)
-                AddMenuItem("Open file in " + editor.Name, (s, e) => OpenFile(editor));
+            //foreach (var editor in Config.Settings.Openers.FileOpeners)
+            //    AddMenuItem("Open file in " + editor.Name, (s, e) => OpenFile(editor));
+
+            activeFileOpeners = Config.Settings.Openers.FileOpeners.Select(
+                x =>
+                    new ActiveOpener<FileOpener>(x, AddMenuItem("Open file in " + x.Name, (s, e) => OpenFile(x)))).ToArray();
+                    //new ActiveFileOpener(x, AddMenuItem("Open file in " + x.Name, (s, e) => OpenFile(x)))).ToArray();
             ResultsContextMenu.Items.Add(new ToolStripSeparator());
 
-            foreach (var opener in LocationOpeners)
+            foreach (var opener in Config.Settings.Openers.LocationOpeners)
                 AddMenuItem(opener.Name + " Here", (s, e) => OpenLocation(opener));
             ResultsContextMenu.Items.Add(new ToolStripSeparator());
 
-            foreach (var opener in MultiOpeners)
-            {
-                opener.MenuItem = AddMenuItem("Open with " + opener.Name, (s, e) => MultiOpenLocation(opener));
-            }
+            activeDiffOpeners = Config.Settings.Openers.DiffOpeners.Select(x =>
+                    new ActiveOpener<DiffOpener>(x, AddMenuItem("Open with " + x.Name, (s, e) => DiffOpenLocation(x)))).ToArray();
+                    //new ActiveDiffOpener(x, AddMenuItem("Open with " + x.Name, (s, e) => DiffOpenLocation(x)))).ToArray();
 
             ResultsContextMenu.Items.Add(new ToolStripSeparator());
 
@@ -494,18 +561,27 @@
 
             AddMenuItem("Clear results", (s, e) => Clear());
 
-            defaultOpener = FileOpeners.Union(LocationOpeners).First(x => x.DoubleClickAction);
+            defaultOpener = Config.Settings.Openers.FileOpeners.First(x => x.DoubleClickAction);
             ResultsContextMenu.Opening += ResultsContextMenu_Opening;
         }
 
+
         private void ResultsContextMenu_Opening(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            foreach (var opener in MultiOpeners)
+            foreach (var item in activeDiffOpeners)
             {
-                if (dgResults.SelectedRows.Count > 1 && dgResults.SelectedRows.Count <= opener.MaxFiles)
-                    opener!.MenuItem!.Enabled = true;
+                if (dgResults.SelectedRows.Count > 1 && dgResults.SelectedRows.Count <= item.Opener.MaxFiles)
+                    item!.MenuItem!.Enabled = true;
                 else
-                    opener!.MenuItem!.Enabled = false;
+                    item!.MenuItem!.Enabled = false;
+            }
+
+            foreach (var item in activeFileOpeners)
+            {
+                if(dgResults.SelectedRows.Count < 2 && !item.Opener.SingleFile)
+                    item!.MenuItem!.Enabled = false;
+                else
+                    item!.MenuItem!.Enabled = true;
             }
         }
 
@@ -517,57 +593,61 @@
             return item;
         }
 
-        private readonly struct Opener
-        {
-            public Opener(string name, string path, string commandLinePattern = "\"[fullpath]\"", bool doubleClickAction = false)
-            {
-                Name = name;
-                Path = path;
-                CommandLinePattern = commandLinePattern;
-                DoubleClickAction = doubleClickAction;
-            }
+        //private readonly struct Opener
+        //{
+        //    public Opener(string name, string path, string commandLinePattern = "\"[fullpath]\"", bool doubleClickAction = false)
+        //    {
+        //        Name = name;
+        //        Path = path;
+        //        CommandLinePattern = commandLinePattern;
+        //        DoubleClickAction = doubleClickAction;
+        //    }
 
-            public string Name { get; }
-            public string Path { get; }
-            public string CommandLinePattern { get; }
-            public bool DoubleClickAction { get; }
-        }
+        //    public string Name { get; }
+        //    public string Path { get; }
+        //    public string CommandLinePattern { get; }
+        //    public bool DoubleClickAction { get; }
+        //}
 
-        private class MultiOpener
-        {
-            public MultiOpener(string name, string path, int maxFiles, string commandLinePattern = "")
-            {
-                Name = name;
-                Path = path;
-                MaxFiles = maxFiles;
-                CommandLinePattern = commandLinePattern;
-            }
+        //private class MultiOpener
+        //{
+        //    public MultiOpener(string name, string path, int maxFiles, string commandLinePattern = "")
+        //    {
+        //        Name = name;
+        //        Path = path;
+        //        MaxFiles = maxFiles;
+        //        CommandLinePattern = commandLinePattern;
+        //    }
 
-            public string Name { get; }
-            public string Path { get; }
-            public int MaxFiles { get; }
-            public string CommandLinePattern { get; }
-            public ToolStripMenuItem? MenuItem { get; set; }
-        }
+        //    public string Name { get; }
+        //    public string Path { get; }
+        //    public int MaxFiles { get; }
+        //    public string CommandLinePattern { get; }
+        //    public ToolStripMenuItem? MenuItem { get; set; }
+        //}
 
         private delegate string CommandLineBuilder(string folder, string filename, string fullpath);
 
-        private static readonly Opener[] FileOpeners = {
-            new Opener("vim", @"C:\tools\vim\vim82\gvim.exe", doubleClickAction:true),
-            new Opener("VsCode", @"C:\Program Files\Microsoft VS Code\Code.exe"),
-        };
+        //private static readonly Opener[] FileOpeners = {
+        //    new Opener("vim", @"C:\tools\vim\vim82\gvim.exe", doubleClickAction:true),
+        //    new Opener("VsCode", @"C:\Program Files\Microsoft VS Code\Code.exe"),
+        //};
 
-        private static readonly MultiOpener[] MultiOpeners =
-        {
-            new MultiOpener("KDiff3", @"C:\Program Files\KDiff3\kdiff3.exe", 3),
-            new MultiOpener("Vimdiff", @"C:\tools\vim\vim82\gvim.exe", 4, "-d"),
-        };
+        private ActiveOpener<DiffOpener>[] activeDiffOpeners;
+        private ActiveOpener<FileOpener>[] activeFileOpeners;
+        //private ActiveDiffOpener[] activeDiffOpeners;
+        //private ActiveFileOpener[] activeFileOpeners;
+        //private static readonly MultiOpener[] MultiOpeners =
+        //{
+        //    new MultiOpener("KDiff3", @"C:\Program Files\KDiff3\kdiff3.exe", 3),
+        //    new MultiOpener("Vimdiff", @"C:\tools\vim\vim82\gvim.exe", 4, "-d"),
+        //};
 
-        private static readonly Opener[] LocationOpeners = {
-            new Opener("PowerShell", @"powershell.exe", "-NoExit -Command Set-Location -LiteralPath '[folder]'"),
-            new Opener("Command Prompt", @"cmd.exe", "/k cd /d \"[folder]\""),
-            new Opener("Explorer", @"explorer.exe", "/select, \"[fullpath]\"")
-        };
+        //private static readonly Opener[] LocationOpeners = {
+        //    new Opener("PowerShell", @"powershell.exe", "-NoExit -Command Set-Location -LiteralPath '[folder]'"),
+        //    new Opener("Command Prompt", @"cmd.exe", "/k cd /d \"[folder]\""),
+        //    new Opener("Explorer", @"explorer.exe", "/select, \"[fullpath]\"")
+        //};
 
         private void dgResults_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {

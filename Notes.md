@@ -22,6 +22,9 @@ Might need to rethink the opener vs multiopener thing. Multiopener is (currently
 ## MouseOver on Binary & System files to say what it's looking for?
 * current implementation is a differently-skinned checkbox, and that don't seem to have a tooltip property to set.
 
+## Add "Include folder patterns"
+* I wanted to search for stuff in "Interop" folders
+
 
 # .Net Framework 4.8 to .Net 5 Upgrade
 From some simple timings, the .Net 5 code was faster for big searches, but the Framework code was faster with a small search where drawing to the screen became a significant part of the run. This may be possible to improve by looking at how results are marshalled back to the UI thread. Or something.

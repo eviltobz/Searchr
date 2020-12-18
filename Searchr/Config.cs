@@ -10,9 +10,10 @@ namespace Searchr.UI
 
     public static class Config
     {
-        private const string SettingsFile = @"My.settings";
+        //private const string SettingsFile = @"My.settings";
+        private const string SettingsFile = @"searchr.settings";
 
-        public static Settings Settings { get; } = LoadSettings(SettingsFile);
+        public static Settings Settings { get; set; } = LoadSettings(SettingsFile);
 
         public static string HistoryDirectory { get; } = FindHistoryDirectory();
 
@@ -127,23 +128,44 @@ namespace Searchr.UI
             {
                 var serializer = new JsonSerializer();
                 var settings = serializer.Deserialize<Settings>(File.ReadAllBytes(file));
-                if(settings is null)
+                if (settings is null)
                     throw new NullReferenceException("Settings should not be null. File might be corrupted");
                 return settings;
             }
             else
             {
-                return new Settings()
-                {
-                    Maximised = false,
-                    Width = 1024,
-                    Height = 768,
-                    ColumnWidth0 = 100,
-                    ColumnWidth1 = 100,
-                    ColumnWidth2 = 100,
-                    ColumnWidth3 = 100,
-                    ColumnWidth4 = 100
-                };
+                //var retval = new Settings(
+                //    new Settings.WindowSettings(false, 1024, 768),
+                //    new Settings.ResultsPaneSettings(
+                //        59, 400, 47, 256, 100, 50,
+                //        0, 1, 2, 3, 4, -1),
+                //    new Settings.OpenerSettings(
+                //        new Settings.Opener[]{
+                //            new Settings.Opener("vim", @"C:\tools\vim\vim82\gvim.exe", DoubleClickAction:true),
+                //            new Settings.Opener("VsCode", @"C:\Program Files\Microsoft VS Code\Code.exe"),
+                //        },
+                //        new Settings.MultiOpener[] {
+                //            new Settings.MultiOpener("KDiff3", @"C:\Program Files\KDiff3\kdiff3.exe", 3),
+                //            new Settings.MultiOpener("Vimdiff", @"C:\tools\vim\vim82\gvim.exe", 4, "-d"),
+                //        },
+                //        new Settings.Opener[] {
+                //            new Settings.Opener("PowerShell", @"powershell.exe", "-NoExit -Command Set-Location -LiteralPath '[folder]'"),
+                //            new Settings.Opener("Command Prompt", @"cmd.exe", "/k cd /d \"[folder]\""),
+                //            new Settings.Opener("Explorer", @"explorer.exe", "/select, \"[fullpath]\"")
+                //        }
+                //    )) ;
+                //return new Settings()
+                //{
+                //    Maximised = false,
+                //    Width = 1024,
+                //    Height = 768,
+                //    ColumnWidth0 = 100,
+                //    ColumnWidth1 = 100,
+                //    ColumnWidth2 = 100,
+                //    ColumnWidth3 = 100,
+                //    ColumnWidth4 = 100
+                //};
+                return Settings.Defaults;
             }
         }
 

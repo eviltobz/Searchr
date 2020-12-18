@@ -32,8 +32,8 @@ namespace Searchr.UI
         {
             if (WindowState != FormWindowState.Maximized)
             {
-                Config.Settings.Width = Width;
-                Config.Settings.Height = Height;
+                Config.Settings.Window.Width = Width;
+                Config.Settings.Window.Height = Height;
             }
         }
 
@@ -116,21 +116,31 @@ namespace Searchr.UI
 
             if (currentResults != null)
             {
-                Config.Settings.ColumnWidth0 = currentResults.Columns[0].Width;
-                Config.Settings.ColumnWidth1 = currentResults.Columns[1].Width;
-                Config.Settings.ColumnWidth2 = currentResults.Columns[2].Width;
-                Config.Settings.ColumnWidth3 = currentResults.Columns[3].Width;
-                Config.Settings.ColumnWidth4 = currentResults.Columns[4].Width;
+                Config.Settings.ResultsPane.ColWidthLines = currentResults.Columns[0].Width;
+                Config.Settings.ResultsPane.ColWidthName = currentResults.Columns[1].Width;
+                Config.Settings.ResultsPane.ColWidthExtension = currentResults.Columns[2].Width;
+                Config.Settings.ResultsPane.ColWidthDirectory = currentResults.Columns[3].Width;
+                Config.Settings.ResultsPane.ColWidthSize = currentResults.Columns[4].Width;
+                //Config.Settings.ColumnWidth0 = currentResults.Columns[0].Width;
+                //Config.Settings.ColumnWidth1 = currentResults.Columns[1].Width;
+                //Config.Settings.ColumnWidth2 = currentResults.Columns[2].Width;
+                //Config.Settings.ColumnWidth3 = currentResults.Columns[3].Width;
+                //Config.Settings.ColumnWidth4 = currentResults.Columns[4].Width;
 
 
-                Config.Settings.ColumnDisplayIndex0 = currentResults.Columns[0].DisplayIndex;
-                Config.Settings.ColumnDisplayIndex1 = currentResults.Columns[1].DisplayIndex;
-                Config.Settings.ColumnDisplayIndex2 = currentResults.Columns[2].DisplayIndex;
-                Config.Settings.ColumnDisplayIndex3 = currentResults.Columns[3].DisplayIndex;
-                Config.Settings.ColumnDisplayIndex4 = currentResults.Columns[4].DisplayIndex;
+                Config.Settings.ResultsPane.ColIndexLines = currentResults.Columns[0].DisplayIndex;
+                Config.Settings.ResultsPane.ColIndexName = currentResults.Columns[1].DisplayIndex;
+                Config.Settings.ResultsPane.ColIndexExtension = currentResults.Columns[2].DisplayIndex;
+                Config.Settings.ResultsPane.ColIndexDirectory = currentResults.Columns[3].DisplayIndex;
+                Config.Settings.ResultsPane.ColIndexSize = currentResults.Columns[4].DisplayIndex;
+                //Config.Settings.ColumnDisplayIndex0 = currentResults.Columns[0].DisplayIndex;
+                //Config.Settings.ColumnDisplayIndex1 = currentResults.Columns[1].DisplayIndex;
+                //Config.Settings.ColumnDisplayIndex2 = currentResults.Columns[2].DisplayIndex;
+                //Config.Settings.ColumnDisplayIndex3 = currentResults.Columns[3].DisplayIndex;
+                //Config.Settings.ColumnDisplayIndex4 = currentResults.Columns[4].DisplayIndex;
             }
 
-            Config.Settings.Maximised = WindowState == FormWindowState.Maximized;
+            Config.Settings.Window.Maximised = WindowState == FormWindowState.Maximized;
             Config.SaveSettings();
         }
 
