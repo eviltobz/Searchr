@@ -24,21 +24,11 @@ yeah, it has the recent list, but i want something more betterer.
 
 ## Move more stuff from hardcoded into settings file
 and add a UI to tweak it
-* file & path openers
 * binary & system file types
-
-## MouseOver on Binary & System files to say what it's looking for?
-* current implementation is a differently-skinned checkbox, and that don't seem to have a tooltip property to set.
 
 ## Add "Include folder patterns"
 * I wanted to search for stuff in "Interop" folders
 
-## Improve the Include/Exclude bits
-* They never seem to work when I try to use em, what are they _actually_ doing?
-* Do they get applied when running a filter, rather than a search? 
-* * Exclude folder names - works on search, not filter
-* * Inc/Exc file name - works on search & regex-based, but tries to replicate wildcards. Wraps pattern with "^<search term>$" swaps "*" for ".*" & "?" for "."
-* * * So, searching for a file extension needs to be "*.cs" or "*cs", search for a bit of a filename "*importantbit*" etc.
 
 
 

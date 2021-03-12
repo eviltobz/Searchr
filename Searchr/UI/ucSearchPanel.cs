@@ -25,6 +25,22 @@
             btnFilter.Enabled = false;
             btnSearch.Enabled = false;
             btnStop.Enabled = false;
+
+            var binaryFilesTip = "Binary file types are:";
+            int index = 0;
+            foreach (var file in Searchr.Core.Search.BinaryFiles.OrderBy(x => x))
+            {
+                if (index % 5 == 0)
+                    binaryFilesTip += "\n";
+
+                binaryFilesTip += file;
+
+                index++;
+                if (index < Searchr.Core.Search.BinaryFiles.Count)
+                    binaryFilesTip += ", ";
+
+            }
+            this.toolTip1.SetToolTip(this.chkIncludeBinaryFiles, binaryFilesTip);
         }
 
         public void Setup()
