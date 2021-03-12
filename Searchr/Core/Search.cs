@@ -83,17 +83,39 @@ namespace Searchr.Core
             return response;
         }
 
+        private static (Regex[] include, Regex[] exclude) BuildFileFilters(SearchRequest request)
+        {
+            Regex FromWildcard(string pattern)
+            {
+                return new Regex("^" + Regex.Escape(pattern)
+                                            .Replace("\\*", ".*")
+                                            .Replace("\\?", ".") + "$",
+                                 RegexOptions.IgnoreCase);
+            }
+
+            var includeFilePatterns = request.IncludeFileWildcards.Distinct().Select(FromWildcard).ToArray();
+            var excludeFilePatterns = request.ExcludeFileWildcards.Distinct().Select(FromWildcard).ToArray();
+
+            return (includeFilePatterns, excludeFilePatterns);
+        }
+
         public static SearchResponse PerformFilter(SearchRequest request, IEnumerable<string> paths)
         {
             var response = new SearchResponse();
             var inputFiles = new BlockingCollection<FileInfo>();
 
+            var (includePatterns, excludePatterns) = BuildFileFilters(request);
+            var excludeFolders = request.ExcludeFolderNames.Select(f => $"\\{f.ToUpperInvariant()}\\").ToArray();
             try
             {
                 foreach (var path in paths)
                 {
                     // TODO - May need some more checking against the request here, eg. file extension.
-                    if (path.StartsWith(request.Directory))
+                    if (path.StartsWith(request.Directory)
+                        && (!includePatterns.Any() || includePatterns.Any(pattern => pattern.IsMatch(path)))
+                        && (!excludePatterns.Any(pattern => pattern.IsMatch(path)))
+                        && (!excludeFolders.Any(folder => path.ToUpperInvariant().Contains(folder)))
+                        )
                         inputFiles.Add(new FileInfo(path));
                 }
             }

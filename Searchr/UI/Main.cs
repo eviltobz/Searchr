@@ -4,6 +4,7 @@ using System.Windows.Forms;
 
 namespace Searchr.UI
 {
+    using System.Collections.Generic;
     using Searchr.Core;
 
     public partial class Main : Form
@@ -89,7 +90,18 @@ namespace Searchr.UI
             }
 
             text += search.SearchTerm + $"\n{pad}" + search.Directory;
+            text += BuildTermList("Include Files", search.IncludeFileWildcards, pad);
+            text += BuildTermList("Exclude Files", search.ExcludeFileWildcards, pad);
+            text += BuildTermList("Exclude Folders", search.ExcludeFolderNames, pad);
             return (text, totalIndent);
+        }
+
+        private string BuildTermList(string title, List<string> elements, string pad)
+        {
+            if (!elements.Any())
+                return "";
+
+            return $"\n{pad}{title}: " + string.Join(", ", elements);
         }
 
         private void resultsTabs_MouseClick(object sender, MouseEventArgs e)

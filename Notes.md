@@ -10,15 +10,6 @@ libgit2 info:
 
 
 
-## "Special" openers?
-Be able to open a VS solution from a search result?
-* look in the file's folder, then step back through parent folders looking for the first .sln?
-* * or list of .sln files to choose if multiple are found - in same folder, or all up the heirarchy?
-* Call it "Project Opener"?
-* * have a pattern for the file (or directory) it's looking for, and the commandline to open it with
-* * could be used for vscode type things, or other projecty type thingies...
-* * * .git folder -> git extensions?
-
 ## Have "favourite" search paths, that can have a friendly name and be easily selected
 eg. All TFS, Connectivity, Database...
 yeah, it has the recent list, but i want something more betterer.
@@ -45,6 +36,10 @@ and add a UI to tweak it
 ## Improve the Include/Exclude bits
 * They never seem to work when I try to use em, what are they _actually_ doing?
 * Do they get applied when running a filter, rather than a search? 
+* * Exclude folder names - works on search, not filter
+* * Inc/Exc file name - works on search & regex-based, but tries to replicate wildcards. Wraps pattern with "^<search term>$" swaps "*" for ".*" & "?" for "."
+* * * So, searching for a file extension needs to be "*.cs" or "*cs", search for a bit of a filename "*importantbit*" etc.
+
 
 
 # .Net Framework 4.8 to .Net 5 Upgrade

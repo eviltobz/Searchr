@@ -76,6 +76,7 @@
             this.Ext = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Directory = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.FileSize = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.pnlControls.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.pnlStatus.SuspendLayout();
@@ -157,9 +158,10 @@
             this.label5.Margin = new System.Windows.Forms.Padding(0);
             this.label5.Name = "label5";
             this.label5.Padding = new System.Windows.Forms.Padding(4, 5, 0, 0);
-            this.label5.Size = new System.Drawing.Size(127, 20);
+            this.label5.Size = new System.Drawing.Size(128, 20);
             this.label5.TabIndex = 43;
             this.label5.Text = "Exclude Folder Names";
+            this.toolTip1.SetToolTip(this.label5, "Comma or semi-colon separated list.");
             // 
             // cmbExcludeFolderNames
             // 
@@ -262,9 +264,11 @@
             this.label4.Margin = new System.Windows.Forms.Padding(0);
             this.label4.Name = "label4";
             this.label4.Padding = new System.Windows.Forms.Padding(4, 5, 0, 0);
-            this.label4.Size = new System.Drawing.Size(118, 20);
+            this.label4.Size = new System.Drawing.Size(119, 20);
             this.label4.TabIndex = 41;
             this.label4.Text = "Exclude File Patterns";
+            this.toolTip1.SetToolTip(this.label4, "Comma or semi-colon separated list.\r\nFull wildcard spec, e.g. *.cs, *importantbit" +
+        "*\r\n");
             // 
             // chkRegex
             // 
@@ -350,6 +354,8 @@
             this.label3.Size = new System.Drawing.Size(117, 20);
             this.label3.TabIndex = 39;
             this.label3.Text = "Include File Patterns";
+            this.toolTip1.SetToolTip(this.label3, "Comma or semi-colon separated list.\r\nFull wildcard spec, e.g. *.cs, *importantbit" +
+        "*\r\n\r\n");
             // 
             // label1
             // 
@@ -359,7 +365,7 @@
             this.label1.Margin = new System.Windows.Forms.Padding(0);
             this.label1.Name = "label1";
             this.label1.Padding = new System.Windows.Forms.Padding(4, 5, 0, 0);
-            this.label1.Size = new System.Drawing.Size(76, 20);
+            this.label1.Size = new System.Drawing.Size(75, 20);
             this.label1.TabIndex = 40;
             this.label1.Text = "Search Term";
             // 
@@ -667,5 +673,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn Ext;
         private System.Windows.Forms.DataGridViewTextBoxColumn Directory;
         private System.Windows.Forms.DataGridViewTextBoxColumn FileSize;
+        private ToolTip toolTip1;
     }
 }
