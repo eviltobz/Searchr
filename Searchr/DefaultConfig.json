@@ -1,0 +1,106 @@
+{
+  "Window": {
+    "Maximised": false,
+    "Width": 1024,
+    "Height": 768
+  },
+  "ResultsPane": {
+    "ColWidthLines": 59,
+    "ColWidthName": 400,
+    "ColWidthExtension": 47,
+    "ColWidthDirectory": 256,
+    "ColWidthSize": 100,
+    "ColWidthIcon": 50,
+    "ColIndexLines": 0,
+    "ColIndexName": 1,
+    "ColIndexExtension": 2,
+    "ColIndexDirectory": 3,
+    "ColIndexSize": 4,
+    "ColIndexIcon": -1
+  },
+  "Openers": {
+    "FileOpeners": [
+      {
+        "Name": "vim",
+        "Path": "C:\\tools\\vim\\vim82\\gvim.exe",
+        "SingleFile": true,
+        "MultiFile": false,
+        "DoubleClickAction": true
+      },
+      {
+        "Name": "vim (single instance)",
+        "Path": "C:\\tools\\vim\\vim82\\gvim.exe",
+        "SingleFile": false,
+        "MultiFile": true,
+        "DoubleClickAction": false
+      },
+      {
+        "Name": "VsCode",
+        "Path": "C:\\Program Files\\Microsoft VS Code\\Code.exe",
+        "SingleFile": true,
+        "MultiFile": true,
+        "DoubleClickAction": false
+      }
+    ],
+    "DiffOpeners": [
+      {
+        "Name": "KDiff3",
+        "Path": "C:\\Program Files\\KDiff3\\kdiff3.exe",
+        "MaxFiles": 3,
+        "CommandLinePattern": ""
+      },
+      {
+        "Name": "Vimdiff",
+        "Path": "C:\\tools\\vim\\vim82\\gvim.exe",
+        "MaxFiles": 4,
+        "CommandLinePattern": "-d"
+      }
+    ],
+    "LocationOpeners": [
+      {
+        "Name": "Explorer",
+        "Path": "explorer.exe",
+        "CommandLinePattern": "/select, [fullpath]"
+      },
+      {
+        "Name": "PowerShell",
+        "Path": "C:\\Users\\tcarter\\AppData\\Local\\Microsoft\\WindowsApps\\Microsoft.WindowsTerminalPreview_8wekyb3d8bbwe\\wt.exe",
+        "CommandLinePattern": "-w 0 -p \"Windows Powershell\" -d \"[folder]\""
+      },
+      {
+        "Name": "zsh",
+        "Path": "C:\\Users\\tcarter\\AppData\\Local\\Microsoft\\WindowsApps\\Microsoft.WindowsTerminalPreview_8wekyb3d8bbwe\\wt.exe",
+        "CommandLinePattern": "-w 0 -p \"Ubuntu-20.04\" -d \"[folder]\""
+      },
+      {
+        "Name": "Command Prompt",
+        "Path": "C:\\Users\\tcarter\\AppData\\Local\\Microsoft\\WindowsApps\\Microsoft.WindowsTerminalPreview_8wekyb3d8bbwe\\wt.exe",
+        "CommandLinePattern": "-w 0 -p \"Command Prompt\" -d \"[folder]\""
+      }
+    ],
+    "ProjectOpeners": [
+      {
+        "Name": "Visual Studio",
+        "Path": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Professional\\Common7\\IDE\\devenv.exe",
+        "CommandLinePattern": "\"[targetpath]\"",
+        "TargetPattern": "*.sln",
+        "TargetType": 0
+      },
+      {
+        "Name": "VS Code",
+        "Path": "C:\\Program Files\\Microsoft VS Code\\Code.exe",
+        "CommandLinePattern": "\"[targetfolder]\"",
+        "TargetPattern": ".vscode",
+        "TargetType": 1
+      },
+      {
+        "Name": "Git Extensions",
+        "Path": "C:\\Program Files (x86)\\GitExtensions\\GitExtensions.exe",
+        "CommandLinePattern": "browse \"[targetfolder]\"",
+        "TargetPattern": ".git",
+        "TargetType": 1
+      }
+    ]
+
+  }
+}

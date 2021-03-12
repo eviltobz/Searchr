@@ -29,33 +29,7 @@ namespace Searchr.UI
         WindowSettings Window,
         ResultsPaneSettings ResultsPane,
         OpenerSettings Openers
-    )
-    {
-
-        public static readonly Settings Defaults =
-                     new Settings(
-                        new WindowSettings(false, 1024, 768),
-                        new ResultsPaneSettings(
-                            59, 400, 47, 256, 100, 50,
-                            0, 1, 2, 3, 4, -1),
-                        new OpenerSettings(
-                            new FileOpener[]{
-                            new FileOpener("vim", @"C:\tools\vim\vim82\gvim.exe",true, false, DoubleClickAction: true),
-                            new FileOpener("vim (single instance)", @"C:\tools\vim\vim82\gvim.exe", false, true),
-                            new FileOpener("VsCode", @"C:\Program Files\Microsoft VS Code\Code.exe",true, true),
-                            },
-                            new DiffOpener[] {
-                            new DiffOpener("KDiff3", @"C:\Program Files\KDiff3\kdiff3.exe", 3, ""),
-                            new DiffOpener("Vimdiff", @"C:\tools\vim\vim82\gvim.exe", 4, "-d"),
-                            },
-                            new LocationOpener[] {
-                            new LocationOpener("PowerShell", @"powershell.exe", "-NoExit -Command Set-Location -LiteralPath '[folder]'"),
-                            new LocationOpener("Command Prompt", @"cmd.exe", "/k cd /d [folder]"),
-                            new LocationOpener("Explorer", @"explorer.exe", "/select, [fullpath]")
-                            }
-                        )
-                    );
-    }
+    );
 
     public record WindowSettings(
         bool Maximised,
@@ -96,9 +70,10 @@ namespace Searchr.UI
     };
 
     public record OpenerSettings(
-        FileOpener[] FileOpeners, // = new Opener[0],
-        DiffOpener[] DiffOpeners, // = new MultiOpener[0],
-        LocationOpener[] LocationOpeners // = new Opener[0]
+        FileOpener[] FileOpeners,
+        DiffOpener[] DiffOpeners,
+        LocationOpener[] LocationOpeners,
+        ProjectOpener[] ProjectOpeners
     );
 
     public record FileOpener(
@@ -111,69 +86,26 @@ namespace Searchr.UI
     public record LocationOpener(
         string Name,
         string Path,
-        string CommandLinePattern); // = "\"[fullpath]\"");//,
-        //bool DoubleClickAction = false);
-
-    //public record MultiOpener(
-    //    string Name,
-    //    string Path,
-    //    int MaxFiles,
-    //    string CommandLinePattern = "");
-    //public record FileOpener
-    //{
-    //    public FileOpener(string name, string path, bool multiOpen)// string commandLinePattern = "\"[fullpath]\"", bool doubleClickAction = false)
-    //    {
-    //        Name = name;
-    //        Path = path;
-    //        MultiOpen = multiOpen;
-    //        //CommandLinePattern = commandLinePattern;
-    //        //DoubleClickAction = doubleClickAction;
-    //    }
-
-    //    public string Name { get; }
-    //    public string Path { get; }
-    //    public bool MultiOpen { get; }
-    //    //public string commandlinepattern { get; }
-    //    //public bool doubleclickaction { get; }
-    //}
-
-    //public record LocationOpener
-    //{
-    //    public LocationOpener(string name, string path, string commandLinePattern)
-    //    {
-    //        Name = name;
-    //        Path = path;
-    //        CommandLinePattern = commandLinePattern;
-    //    }
-
-    //    public string Name { get; }
-    //    public string Path { get; }
-    //    public string CommandLinePattern { get; }
-    //}
+        string CommandLinePattern);
 
     public record DiffOpener(
         string Name,
         string Path,
-        int MaxFiles,
-        string CommandLinePattern);
+        string CommandLinePattern,
+        int MaxFiles);
 
-    //{
-    //    public DiffOpener(string name, string path, int maxFiles, string commandLinePattern = "")
-    //    {
-    //        Name = name;
-    //        Path = path;
-    //        MaxFiles = maxFiles;
-    //        CommandLinePattern = commandLinePattern;
-    //    }
+    public record ProjectOpener(
+        string Name,
+        string Path,
+        string CommandLinePattern,
+        string TargetPattern,
+        FileOrFolder TargetType);
 
-    //    public string Name { get; }
-    //    public string Path { get; }
-    //    public int MaxFiles { get; }
-    //    public string CommandLinePattern { get; }
-    //    public ToolStripMenuItem? MenuItem { get; set; }
-    //}
-
+    public enum FileOrFolder
+    {
+        File,
+        Folder
+    }
 
 }
 
-//}

@@ -491,6 +491,46 @@
             }
         }
 
+        private void OpenProject(ProjectOpener opener)
+        {
+            var selected = dgResults.SelectedRows.OfType<DataGridViewRow>().First();
+            var current = new System.IO.DirectoryInfo(selected.Folder());
+            do
+            {
+                if (opener.TargetType == FileOrFolder.File)
+                {
+                    var files = current.GetFiles(opener.TargetPattern);
+                    if (files.Any())
+                    {
+                        var commandLine = opener.CommandLinePattern
+                            .Replace("[targetfolder]", current.FullName)
+                            .Replace("[targetpath]", files.First().FullName);
+
+                        Process.Start(opener.Path, commandLine);
+                        return;
+                    }
+                }
+                else
+                {
+                    var folders = current.GetDirectories(opener.TargetPattern);
+                    if (folders.Any())
+                    {
+                        var commandLine = opener.CommandLinePattern
+                            .Replace("[targetfolder]", current.FullName);
+
+                        Process.Start(opener.Path, commandLine);
+                        return;
+                    }
+                }
+
+                current = current.Parent;
+            }
+            while (current != null);
+
+            MessageBox.Show($"No {opener.TargetPattern} {opener.TargetType.ToString().ToLower()} found to open in {opener.Name}", "Unable to open root", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+        }
+
+
         //private void MultiOpenLocation(MultiOpener opener)
         //{
         //    var files = dgResults.SelectedRows.OfType<DataGridViewRow>().Select(x => $"\"{x.FullPath()}\"");
@@ -541,7 +581,7 @@
             activeFileOpeners = Config.Settings.Openers.FileOpeners.Select(
                 x =>
                     new ActiveOpener<FileOpener>(x, AddMenuItem("Open file in " + x.Name, (s, e) => OpenFile(x)))).ToArray();
-                    //new ActiveFileOpener(x, AddMenuItem("Open file in " + x.Name, (s, e) => OpenFile(x)))).ToArray();
+            //new ActiveFileOpener(x, AddMenuItem("Open file in " + x.Name, (s, e) => OpenFile(x)))).ToArray();
             ResultsContextMenu.Items.Add(new ToolStripSeparator());
 
             foreach (var opener in Config.Settings.Openers.LocationOpeners)
@@ -550,8 +590,14 @@
 
             activeDiffOpeners = Config.Settings.Openers.DiffOpeners.Select(x =>
                     new ActiveOpener<DiffOpener>(x, AddMenuItem("Open with " + x.Name, (s, e) => DiffOpenLocation(x)))).ToArray();
-                    //new ActiveDiffOpener(x, AddMenuItem("Open with " + x.Name, (s, e) => DiffOpenLocation(x)))).ToArray();
+            //new ActiveDiffOpener(x, AddMenuItem("Open with " + x.Name, (s, e) => DiffOpenLocation(x)))).ToArray();
+            ResultsContextMenu.Items.Add(new ToolStripSeparator());
 
+            activeProjectOpeners = Config.Settings.Openers.ProjectOpeners.Select(
+                x =>
+                    new ActiveOpener<ProjectOpener>(x, AddMenuItem("Open root in " + x.Name, (s, e) => OpenProject(x)))).ToArray();
+            //foreach (var opener in Config.Settings.Openers.ProjectOpeners)
+            //    AddMenuItem(opener.Name + " Here", (s, e) => OpenProject(opener));
             ResultsContextMenu.Items.Add(new ToolStripSeparator());
 
             AddMenuItem("Copy folder to clipboard", (s, e) => Clipboard.SetText(activeRow?.Folder()));
@@ -578,10 +624,15 @@
 
             foreach (var item in activeFileOpeners)
             {
-                if(dgResults.SelectedRows.Count < 2 && !item.Opener.SingleFile)
+                if (dgResults.SelectedRows.Count < 2 && !item.Opener.SingleFile)
                     item!.MenuItem!.Enabled = false;
                 else
                     item!.MenuItem!.Enabled = true;
+            }
+
+            foreach (var item in activeProjectOpeners)
+            {
+                item!.MenuItem!.Enabled = (dgResults.SelectedRows.Count == 1);
             }
         }
 
@@ -635,6 +686,7 @@
 
         private ActiveOpener<DiffOpener>[] activeDiffOpeners;
         private ActiveOpener<FileOpener>[] activeFileOpeners;
+        private ActiveOpener<ProjectOpener>[] activeProjectOpeners;
         //private ActiveDiffOpener[] activeDiffOpeners;
         //private ActiveFileOpener[] activeFileOpeners;
         //private static readonly MultiOpener[] MultiOpeners =
