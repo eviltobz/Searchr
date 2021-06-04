@@ -156,13 +156,13 @@ namespace Searchr.Core
             {
                 files = Directory.EnumerateFiles(path, searchPattern);
             }
-            catch (UnauthorizedAccessException)
-            {
-            }
+            catch (UnauthorizedAccessException) { }
+            catch (DirectoryNotFoundException) { }
 
             if (files != null)
                 foreach (var file in files)
-                    yield return file;
+                    if(file != null)
+                        yield return file;
 
             if (searchOption == SearchOption.AllDirectories)
             {
@@ -170,9 +170,8 @@ namespace Searchr.Core
                 {
                     subdirs = Directory.EnumerateDirectories(path);
                 }
-                catch (UnauthorizedAccessException)
-                {
-                }
+                catch (UnauthorizedAccessException) { }
+                catch (DirectoryNotFoundException) { }
 
                 if (subdirs != null)
                     foreach (var subdir in subdirs.Where(s => !request.ExcludeFolderNames.Any(exc => s.EndsWith(exc, StringComparison.CurrentCultureIgnoreCase) &&
@@ -184,7 +183,8 @@ namespace Searchr.Core
                                                              !(request.ExcludeSystem && dir.Attributes.HasFlag(FileAttributes.System));
                                                   }))
                         foreach (var file in EnumerateFiles(request, subdir, searchPattern, searchOption))
-                            yield return file;
+                            if(file != null)
+                                yield return file;
             }
         }
 

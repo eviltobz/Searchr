@@ -29,6 +29,14 @@ and add a UI to tweak it
 ## Add "Include folder patterns"
 * I wanted to search for stuff in "Interop" folders
 
+## Command line args
+* open searchr with the directory set to the given dir - useful when at the command line
+
+## If the exclude folder name (or include i spose) would be a match for the search dir, ping up an error box.
+
+## Opener stuff - Save in kdiff, compare to saved kdiff, like in windows explorer? 
+* hmmm. it'd be ace if it could tie in to what explorer is using, but i bet that's local to the process... maybe. try a search of the registry, or look for config/ini/yourmum files in kdiff's install or user folders. 
+
 
 
 
